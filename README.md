@@ -8,7 +8,7 @@ The files were extracted from the tape image using the [itstar program](https://
 
 The ```sys```, ```taa```, ```marc```, and ```madman```, directories in each sub-folder contain the source code, documentation, and binary files for the game.
 
-The ```}msgs}``` directories contain files where messages were posted to users, ```trivia.curfew``` files were messages to trivia users. The [```trivia.curfew```](../main/trivia/9005201/}msgs}/trivia.curfew) file in the ```9005183``` directory states that Trivia became unavailable by October 1977.
+The ```}msgs}``` directories contain files where messages were posted to users, ```trivia.curfew``` files were messages to trivia users. The [```trivia.curfew```](../main/trivia/9005201/}msgs}/trivia.curfew) file in the ```9005201``` directory states that Trivia became unavailable by October 1977.
 
 ### [codemeta.json](../main/codemeta.json)
 This file is metadata about the Trivia files, using the [CodeMeta Project](https://codemeta.github.io/) schema.
