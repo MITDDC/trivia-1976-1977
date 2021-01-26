@@ -1,0 +1,46 @@
+trivia
+├── [Jan 25 12:06]  100260
+│   ├── [Jan 25 12:06]  sys
+│   │   └── [Apr  7  1977]  ts.trivia
+│   └── [Jan 25 12:06]  taa
+│       ├── [Apr  6  1977]  tvbug.118
+│       └── [Apr  6  1977]  tvbug.bin
+├── [Jan 25 12:06]  7005366
+│   └── [Jan 25 12:06]  _info_
+│       ├── [May 30  1977]  its.tvdoc
+│       └── [May 30  1977]  its.tvdoix
+├── [Jan 25 12:06]  9005143
+│   ├── [Jan 25 12:06]  madman
+│   │   ├── [Jun 27  1977]  trv.savfil
+│   │   └── [Jun 24  1977]  tv.file
+│   ├── [Jan 25 12:06]  marc
+│   │   ├── [Jun 29  1977]  tvdefs.18
+│   │   ├── [Jun 28  1977]  tvfrob.94
+│   │   ├── [Jun 27  1977]  tvguts.149
+│   │   └── [Jun 27  1977]  tvguts.nbin
+│   ├── [Jan 25 12:06]  }msgs}
+│   │   └── [Jul  1  1977]  trivia.curfew
+│   └── [Jan 25 12:06]  taa
+│       └── [Jun 30  1977]  ar2.tv
+├── [Jan 25 12:06]  9005183
+│   └── [Jan 25 12:06]  taa
+│       └── [May 31  1977]  ar2.tv
+├── [Jan 25 12:06]  9005201
+│   └── [Jan 25 12:06]  }msgs}
+│       └── [Oct  2  1977]  trivia.curfew
+└── [Jan 25 12:06]  9006234
+    ├── [Jan 25 12:06]  madman
+    │   ├── [Oct 12  1976]  trv.savfil
+    │   └── [Oct 12  1976]  tv.file
+    └── [Jan 25 12:06]  marc
+        ├── [Oct 12  1976]  ar1.tv
+        ├── [Oct 11  1976]  tvdefs.2
+        ├── [Oct 11  1976]  tvfrob.1
+        ├── [Oct 12  1976]  tvfrob.5
+        ├── [Oct 12  1976]  tvfrob.nbin
+        ├── [Oct 12  1976]  tvguts.4
+        ├── [Oct 12  1976]  tvguts.nbin
+        ├── [Oct 12  1976]  tvhack.gbin
+        └── [Oct 12  1976]  tv.save
+
+17 directories, 26 files

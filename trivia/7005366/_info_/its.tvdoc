@@ -1,0 +1,624 @@
+Use with JCL of HELP for generally useful information.
+
+
+HELP:
+	It is highly recommended that you read and, if possible, obtain a
+copy of MADMAN;TVDOC >.  Be warned:  it's over 4 blocks long.
+	It is important to recognize the distinction among the three
+types of input TRIVIA will take:  text, symbolic, and numerical.  The
+first and third are very straightforward:  appropriate characters,
+followed by an altmode.  The third often causes difficulty.  Symbolic
+input is used in multiple choice, true/false, ranking, and matching
+questions, for example:  all cases where you are choosing from an
+exactly specified set.  
+	In symbolic input, TRIVIA is attempting to match what you've
+typed against the set it's been given.  Obviously it isn't necessary to
+type the entire thing you want to get, so TRIVIA will try to complete
+it for you.  There are four characters of interest here:
+  <space>:  completes the string you're typing in as far as it can.  If
+more than one string is possible, '&' will be typed.  If no string is
+possible, '?' will be typed.
+  <altmode>:  completes the string you're typing in, and, if only one
+choice remains, confirms it.  This is typically the best way to
+terminate input.
+  <carriage return>:  confirms the string you have so far typed in,
+without completing it.  This will typically lose, unless you're sure
+you've typed in the entire choice.  Note that <space> <carriage return>
+is equivalent to <altmode>.
+  <control-F>:  lists the possibilities remaining.  Thus, to find all
+the choices on a multiple-choice question, type control-F.  Similarly,
+if you can't figure out why TRIVIA keeps typing '&' at you, type
+control-F after one and find out.
+	In performing the matches, TRIVIA ignores case:  'TV/Radio',
+'TV/RADIO', and 'tv/radio' are all the same.
+	Note that since you are matching strings, it is NOT sufficient
+to say '1' in answer to a multiple choice question:  you're really
+saying '1. Mumble foo'.  Typically, using completion, you'll only have
+to type the '1', followed by altmode.  But not if there are more than 10
+choices.
+
+
+READTHIS:
+	In this file the letter '.' has been replated by
+the letter '-' where it appears as the name of a section
+(e.g. UPDATE.QUESTION ==> UPDATE-QUESTION.)
+	Only the first 6 characters are used.
+
+
+HOURS:
+
+	TRIVIA is loaded by typing either TRIVIA or :TRIVIA to DDT.
+TRIVIA will check for the availability of the game (see below) and then
+load the actual TRIVIA program.  
+	The availability of TRIVIA for non-directory owners is as
+follows:	
+	Mon-Fri : 10pm - 9am
+	Sat-Sun : All day
+	Holidays: All day
+
+
+PASSWORDS:
+
+	Each TRIVIA player is required to have a password which will
+be checked upon each entrance into the game.  The first time a player
+uses TRIVIA, he will be asked to supply his password.  He will also
+be allowed to check this password.  If the check fails (i.e. he has
+forgotten it in the last 5 seconds or has thought of a better one),
+he will be asked for his password again.
+
+
+PROMPTS:
+
+	TRIVIA uses a number of different of methods for eliciting
+information from the user.  In each of these methods there is a prompt
+indicating the type of information being elicited and a SYNTACTIC prompt
+indicating the method by which the information must be entered.
+This second prompt is not standardly available but can be made so by
+typing the VERBOSE command to the TRIVIA command reader (see below).
+See individual sections for the meanings of the following verbose
+commands: BUFFER, FIX, FLOAT, SYM, MULT.
+
+
+BUFFER:
+  Text terminated by an altmode (but see 'Safety' command).
+	The following special characters are recognized inside BUFFERs
+	    i.    Control-D -- display BUFFER
+	    ii.   Control-E -- edit BUFFER (TECO)
+	    iii.  Control-F -- read from file.  This is NOT safe as ctrl-F to a SYM.
+	    iv.   Control-L -- clear screen and display BUFFER
+	    v.    Control-Q -- quote the next character
+	    vi.   Control-T -- toggle 'Tell answer' mode
+	    vii.  Control-V -- toggle Verbose 'More questions' mode
+	    viii. Control-W -- delete the last word
+	    ix.   Control-X -- delete the last line
+	    x.    Control-Y -- insert a file
+	    xi.   Control-@ -- delete the entire buffer
+
+N.B.
+	When control-E has been typed at a buffer, it conses up an
+	inferior TECO, defaultly TS T (the particular program may be set
+	by using the 'Which.teco' command).  This first prints out a
+	warning, which probably no one will understand, then dumps
+	whatever you had in the TRIVIA buffer into the TECO buffer.  You
+	may perform whatever obscenities you like, then return to TRIVIA
+	via ctrl-C, ctrl-K, or any other tasteful TECO exit.  Due to
+	obscure interactions among MUDDLE, TECO, and ITS, this is not
+	guaranteed to be totally winning.  If you are foolish enough to
+	use it, be sure to check what you get back when you return from
+	TECO.  Your TRIVIA will print something like 'Back to MUDDLE',
+	whereupon you should redisplay your buffer (via ctrl-D or
+	ctrl-L) BEFORE typing <altmode>, to ensure that winnage has
+	occurred.
+
+
+TECO:
+	When control-E has been typed at a buffer, it conses up an
+	inferior TECO, defaultly TS T (the particular program may be set
+	by using the 'Which.teco' command).  This first prints out a
+	warning, which probably no one will understand, then dumps
+	whatever you had in the TRIVIA buffer into the TECO buffer.  You
+	may perform whatever obscenities you like, then return to TRIVIA
+	via ctrl-C, ctrl-K, or any other tasteful TECO exit.  Due to
+	obscure interactions among MUDDLE, TECO, and ITS, this is not
+	guaranteed to be totally winning.  If you are foolish enough to
+	use it, be sure to check what you get back when you return from
+	TECO.  Your TRIVIA will print something like 'Back to MUDDLE',
+	whereupon you should redisplay your buffer (via ctrl-D or
+	ctrl-L) BEFORE typing <altmode>, to ensure that winnage has
+	occurred.
+
+
+FIX:
+   Integer terminated by altmode or <cr>
+
+
+FLOAT:
+   Floating point decimal number terminated by altmode or <cr>
+
+
+SYM: 
+   Symbolic input.
+	The following special characters are recognized by SYM
+	    i.     <altmode> will complete a symbol if possible (printing ? if not)
+		   and terminate the response.  
+	    ii.    <space> will cause completion to take place, but not terminate.
+	    iii.   <cr> will cause termination without completion.
+	    iv.   Control-F -- print all possible symbols at this point
+
+
+MULT:
+   Multiple items allowed, with SYM.
+	The following special characters are recognized by MULT (in addition
+	to those for SYM)
+	    i.    <comma> is used to separate items
+	    ii.   Control-A -- use all possibilities at this point
+	    iii.  Control-R -- flush the last item entered
+
+
+Y-N:
+  Yes/No switch.
+	The first character typed is eaten
+	and compared to Y or N.  If Y, the answer will be yes.
+	If N, the answer will be no.  Otherwise, it will ask again
+	until a Y or N is typed.  The only exceptions to this are
+	that Control-T may be used for 'Want the answer' and Control-V
+	may be used for 'More'.
+
+
+COMMANDS:
+
+	TRIVIA has a command level from which all of the available
+operations of TRIVIA may be called.
+	TRIVIA command level prompts with an '@' and has an implicit
+SYNTACTIC prompt of SYM.
+	See sections for individual commands
+
+
+ANNOUNCE:
+	Make an announcement to all trivia players.  This command is
+	NOT intended to be used randomly and should ONLY be used if
+	there is an urgent need to tell everyone something.  Its main
+	use is in announcing changes to TRIVIA.  Announcements now
+	vanish after roughly two weeks.
+
+
+ANSWER:
+	Answer new questions.
+
+
+AUTO.READ:
+	This tailorable switch toggles the state of automatic reading of
+	mail received while in teleconference mode.  If it is on, mail
+	will be read at some point after the --MESSAGE HERE-- message,
+	though not immediately.  It takes the place of the old
+	Immediate.read switch; the tailored state of immediate reading
+	will automatically become that of automatic reading.
+
+
+BABBLE:
+	Print comparative scores of the TRIVIA players.  The scores
+	may be sorted on any of the Categories, Name, and Total.
+	Within this designation, the scores are sorted either on
+	total points, maximum possible points, percentage
+	(batting average), or questions (number of questions submitted).
+	The first call to BABBLE is rather slow but future calls
+	are very rapid.  The first is slow because it loads scores
+	for all of the players.  Thus, future BABBLEs are fast at
+	the expense of being non-current (see LOAD.SCORES command).
+	The TINY.BABBLE command (q.v.) performs a similar function.  The
+	program TS BABBLE does the same thing for totals only, but is
+	much faster.  See the section on auxiliary programs, far below. 
+
+
+DDT-BABBLE:
+	Runs a TS BABBLE inferior to your TRIVIA.  TRIVIA will request
+	JCL, which should be identical to that given to :BABBLE in DDT. 
+	The feature of this is that it is much faster than the normal
+	TRIVIA babble, at the expense of having far fewer options.
+
+
+END-TELECONFERENCE:
+	End teleconference mode (see Teleconference).
+
+
+GRADE:
+	Grade incoming mail and read responses to Answered questions
+
+	Another feature of the new TRIVIA is postponing grading of
+any number of questions.  This may be done by typing altmode to the
+prompt 'Score (out of xx.xxx)'.
+
+	Another feature in grading is automagic scoring of long answer
+questions when the answerer 'gives up'.  The question maker is still asked
+to provide a comment for the poor loser, but this is not required.
+
+
+INTEST:
+	Repeats the start-up sequence:  reads announcements, and does
+	whatever the player's tailor information specifies.
+
+
+KILL-TECO:
+	When an inferior TECO is created by typing  to a buffer, it is
+	kept around, since the process of creating a new one may be
+	fairly slow and painful.  However, the TECO is also holding down
+	a job slot and some virtual pages, and may therefore need to be
+	flushed.  This command does that.  There is a facility which
+	allows the maintainer to kill all inferior TECOs if it is
+	absolutely necessary.
+
+
+LOAD-SCORES:
+	Load the current score tables into TRIVIA.  This must be done
+	if it is necessary to insure that BABBLE (other than the initial
+	one) has the most up-to-date score information.
+
+
+MAKE:
+	Make new questions.
+ 
+	TRIVIA requests all of the information required for making up
+any sort of TRIVIA question.  The following are interesting tidbits 
+about quirks, etc. in making questions:
+
+    a. To indicate that the last choice for a multiple choice, true/false,
+or matching question has come, type an altmode.
+
+    b. After supplying the information for 'Column A' and 'Column B' for
+matching questions, TRIVIA will simululate asking you the question.
+The responses you give will be taken to be correct.
+
+    c. To flush a question, 
+	i.   In multiple choice, true/false - type Control-R to the
+	     request for correct answer
+	ii.  In matching, type Control-R to any request for correct match.
+	iii. In long answer, type altmode to an empty BUFFER.
+       In any case, a NULL question (i.e. empty BUFFER) is a loser.
+       Also, Control-S takes you back to command level from anywhere.
+
+
+NO-SIMPLE:
+	Toggle a tailorable switch which determines whether simple
+	questions will be seen.  Normally they will be.
+
+
+PEEK:
+	Print some information about people presently playing TRIVIA. 
+	This causes an inferior TS TVPEEK to be run with no JCL.  See
+	also the RPEEK command.  See the section on auxiliary programs.
+	
+
+
+PRINT-SCORE:
+	Print the scores (by category) of various players.  This will
+	also print the players' progress, and the number of questions
+	submitted in each category.
+
+
+QUESTION-PRINT:
+	Print various of the questions submitted by the current user,
+	with their answers and scores, and a total score for all
+	questions printed.  This is intimately related to
+	Status.of.question and Summary.status.of.question.
+
+
+QUIT:
+	Leave TRIVIA
+
+
+READ-MAIL:
+	Read the personal mail file.  There is no way to save mail
+	once it has been read.
+
+
+RPEEK:
+	Run an inferior TS TVPEEK with JCL of "R", causing it to loop. 
+	See also the section on auxiliary programs, and the PEEK
+	command. 
+
+
+SAFETY:
+	Toggle safe BUFFERs mode.  In 'safe' mode, a BUFFER will
+  	type [Confirm] after an altmode.  To terminate (i.e. Confirm),
+	type another altmode.
+
+
+SAVE-TAILOR:
+	Save the current state of switches and sequence as the
+	state in which future uses of TRIVIA will come up (see section IX).
+
+
+SEND-MAIL:
+	Send personal mail to another TRIVIA user.
+
+
+SEQUENCE:
+	Set the start up sequence for TRIVIA (see section IX).
+
+
+SHOUT:
+	For normal users, this command is a no-op.  It allows the
+	maintainers to send a message to all TRIVIAs simultaneously, to
+	be printed when it is convenient for the receiving TRIVIAs (NOT
+	for the receiving player, necessarily.)  Should you receive such
+	an unsolicited message, please pay attention to it.  There is
+	also a facility which allows the maintainers to cause all
+	TRIVIAs to go away if that should ever prove necessary; it is
+	used very rarely, for obvious reasons.
+
+
+SIMP-LOAD:  (SIMPLE.LOAD)
+	Create a new symbol table of the current player's simple
+	questions, for use by the Simple.print and Simple.update (q.v.)
+	commands.  This is performed automatically the first time either
+	of the aforementioned two commands is invoked.  It used to be
+	quite slow, but is now quite fast.  This command is only
+	necessary when simple questions have been created since the last
+	invocation of Simple.print or Simple.update.
+
+
+SIMP-PRINT:  (SIMPLE.PRINT)
+	Print simple questions.  Any player's simple questions may be
+	printed by anyone (in the unlikely event that one desires to
+	savor the 'wit' exhibited therein), but only the author can
+	perform an update.
+
+
+SIMP-UPDATE:  (SIMPLE.UPDATE)
+	Update a specified simple question.  See Update.question.  There
+	are separate commands because simple questions are stored
+	differently in the data base.
+	
+
+STATUS-OF-QUESTION:
+	Print the questions listed and give their status (how many
+	people have answered it and how they did)
+	This only works if you are the author of the question.
+
+
+SUMMARY-STATUS-OF-QUESTION:
+	Prints the cumulative score for the specified questions.  This
+	is a nonverbose form of Status.of.question.
+
+
+TELECONFERENCE:
+	Listen for new personal mail arriving every n seconds and tell
+	when a message has arrived.  The Auto.read command controls
+	whether the mail will be printed by TRIVIA without user
+	intervention.  Peek indicates when a player is in this mode by
+	printing a "T" next to his name.
+
+
+TINY-BABBLE:
+	This is like Babble, except that it asks how many players it
+	should babble on, and only prints out the scores for the top n
+	players by whatever criteria you have selected.
+
+
+TVBUG:
+	Runs TS TVBUG as an inferior, without JCL.  See the section on
+	auxiliary programs.
+
+
+TVTODO:
+	After requesting JCL (for which, see the section on auxiliary
+	programs; giving none (by typing altmode) is generally
+	suitable), this runs a TS TVTODO as an inferior.
+
+
+TWHOIS:
+	After requesting JCL (none will often win, but see the section
+	on auxiliary programs), prints the information provided by
+	TVPEEK, BABBLE, and optionally TVTODO for a single player.
+
+
+UPDATE-QUESTION:
+	Update a question you have authored.  The category and the
+	value may not be altered.  This does not yet work for ranking
+	questions. 
+ 
+
+VERBOSITY:
+	Toggle verbose prompt mode
+
+
+WHICH-TECO:
+	Choose a particular incarnation of TECO for use when  is typed
+	at a buffer.
+
+
+QUESTION TYPES:
+
+LONG:
+	The user is asked to respond by typing in a response.
+	The author must grade these questions before scoring is done.
+	
+
+MULTIPLE CHOICE:
+	The user is asked to select the correct choice among those printed. 
+	This type of question is scored instantly.
+
+
+TRUE-FALSE:
+	See Multiple Choice
+
+
+MATCHING:
+	The user is asked to select something from Column A, and is then
+	asked for a match.  The default (obtained by typing altmode) for
+	the choice from column A is the lowest-numbered item in that
+	column which as yet has no answer.  When all have been answered,
+	the default action is to end the question.  In this method,
+	therefore, it is possible to change the answer given for one of
+	the items in Column A, or even to give up on one of the choices.
+	When you are through, type <cr> or <altmode> to the request for
+	something from Column A.  This type of question in scored
+	instantly with 1/N credit for each correct match (for N items in
+	'Column A').  To give up, type Control-R to a request for
+	something from column a (perhaps even to a request for something
+	from column b).
+
+
+JOINT:
+	Joint questions have more than one author associated with them;
+	none of the authors is asked the question.  Grading mail goes to
+	the person in whose TRIVIA the question was made, but all authors
+	are indicated when the question is printed.  Joint questions also
+	have one of the four types above:  if "Joint" is given as the
+	type of a question being made, TRIVIA will then ask for the type
+	of question again.
+
+
+RANKING:
+     	Ranking questions ask you to order a list of choices.  The
+	interface attempts to look similar to that for matching
+	questions:  once the question has been printed, TRIVIA prompts
+	with 'Rank ', and waits for input.  To this, you may type
+	'Print', 'Terminate', or one or more of the items to be ranked. 
+	Print and Terminate are complete commands:  Print prints the
+	choices as you have ranked them so far, while Terminate causes
+	your answer to be scored.  'Terminate' is now the ONLY way to
+	get out of a ranking question, and is never the default:  you
+	have to explicitly tell TRIVIA that you're through. If you wish
+	to enter more than one item, those entered must be separated by
+	commas; at this point, comma is exactly like altmode except that
+	TRIVIA expects another choice to follow a comma.  When you have
+	entered as many items as you wish, type carriage return in
+	response to the 'and' prompt, or follow the last item with
+	altmode rather than comma.
+
+	When the list of items has been obtained, TRIVIA will ask you
+	what to do with it: 'as'--put the list of possibilities in the
+	ranking, unranking them if they are already there, and
+	clobbering any choices which are already in the specified slots.
+	This is the default.  TRIVIA will ask for a number, which is the
+	position where it will start putting the list in the ranking;
+	the default is the lowest unused slot.  The simple way to answer
+	ranking questions is now as follows:  to 'Rank', give all the
+	possibilities, in the order you desire, separated by commas.
+	Default the action to 'as', and the location to '1'.  This will
+	specify all the positions in the ranking, and you can then say
+	'Terminate' to the next 'Rank' prompt to get out. 'after'--put
+	the list of possibilities in the ranking after some possibility
+	already there.  TRIVIA will attempt to preserve all the items
+	currently ranked by filling in holes in the ranking.
+	'before'--put the list before some possibility already there.
+	'nowhere'--remove each item in the list from the ranking.
+
+	You may answer the question in one fell swoop, therefore, by
+	giving all the choices in the desired order, then defaulting the
+	next two things TRIVIA asks for.  Answering 'Terminate' to the
+	next 'Rank' prompt will then terminate.	
+	
+	Your score is computed by a method that is obscure:  50% of it
+	is for correct positioning, 50% for correct ordering, so you
+	don't lose completely if you get one choice out of order.
+	
+	A Ranking question is made just as it is answered.  It is
+	possible to give more choices than there are positions in the
+	ordering.   In making a ranking question, you are asked for the
+	item to rank, how it is to be ranked (increasing/decreasing) and
+	the attribute by which to do the ranking.  By convention,
+	'increasing order of size' means that the smallest thing will
+	come first.
+	
+		***MAKE SURE THE QUESTION IS NOT AMBIGUOUS***
+	
+
+CATEGORIES:
+	TRIVIA questions are also broken into categories for purposes
+of scoring.  Users may not opt to answer questions that fall into only
+one category or other.
+
+	Athletics
+	Cinema
+	Events
+	General
+	History
+	Literature
+	Music
+	Science Fiction
+	TV/Radio
+
+SCORING:
+	TRIVIA questions have values attached to them by their authors.
+Legal values are greater than 0.0 and less than 2.0.  In grading these
+questions, only scores less than or equal to the given value will be
+allowed.
+
+	SIMPLE questions have no value in the score.  At present,
+a simple question is printed, immediately followed by its answer; you
+will then be asked for "Nonsense".  If nothing is given, no response
+will be sent to the author; otherwise the nonsense will appear in the
+author's grading mail.  Reading of simple questions may be prevented
+or reinstated by using the No.simple command.  The following commands
+are also useful:  Simple.load, Simple.print, and Simple.update.
+
+
+
+
+TAILORING:
+
+	The status of the various toggle switches (6 currently) and
+the sequence of actions TRIVIA takes upon starting up may be tailored
+to meet the needs (whims) of TRIVIA users.
+	The command SEQUENCE is used to set up the sequence of actions
+TRIVIA is to take when starting.  The possible actions are reading mail,
+grading, answering, making, and checking the status of questions, doing
+a babble, and printing scores.  Up to 9 items may be selected for the
+sequence.  When the sequence is exhausted, TRIVIA enters command level.
+The SEQUENCE command does not become effective until a SAVE.TAILOR command
+is given.
+	The command SAVE.TAILOR is used to actually update the tailor
+information in the user's personal area in the TRIVIA data base.  It reads
+the values of the toggle switches and the results of any SEQUENCE commands
+given and saves this information.  When TRIVIA starts up, the switches
+are put in the correct state and the sequence is performed.  The result
+of any 'Which.teco' command is also saved.
+
+
+AUXILIARY-PROGRAMS:
+
+	There are, at the moment, five programs other than TRIVIA
+itself which may be found useful.
+TS BABBLE
+	Performs much the same function as a Babble on Total, but is
+much faster.  However, it is not guaranteed to be current if the system
+is flaky.  The following JCL is appropriate:
+  V  (used in combination with any of the below) means print information
+	on all players; BABBLE normally gives only those who have
+	answered a reasonable proportion of the questions.
+  P  Sort on progress
+  S  Sort on total score
+  M  Sort on maximum possible score
+  A  Sort alphabetically
+When given no JCL, BABBLE sorts on the percentage.
+
+TS TVPEEK
+	Looks like Peek in TRIVIA.  :PEEK R causes it to go into a loop,
+redisplaying every n seconds.  "n" may be set by typing numbers between
+1 and 9 at a running TVPEEK.
+
+TS CHECK, TS TVTODO
+	Determine whether TRIVIA is available, and how much grading and
+answering the player in question has.  Most useful in .ddt. (init)
+files,  where it can be invoked with :CHECK or :TVTODO.  CHECK always
+prints whether TRIVIA is up; if the player has anything to do, it prints
+that as well.  TVTODO normally prints TRIVIA's status and how much the
+player has to do, including perhaps 'nothing.'  If given JCL 'W'
+(:TVTODO W) it will print nothing unless the player has something to do,
+in which case it prints TRIVIA's status and what there is to do.  JCL
+'N' is like 'W', except that only information about grading is printed.
+
+TS TWHOIS
+	Prints the 'peek line' for a player (if he is in the game, what
+he's doing and how long he's been in; otherwise, when he last played),
+along with the line BABBLE would give.  Defaults to the person running
+it; specify someone else with JCL of /<name>.  JCL of 'V' causes the
+information given by TVTODO to be provided also.  (:TVTODO V/TAA, for
+example.)  The W and N switches of TVTODO are also applicable here.
+
+TS TVBUG
+	Is used to report TRIVIA bugs, and, when, necessary, bring it
+down.  For further information, see MADMAN;TVLOSE >.
+   

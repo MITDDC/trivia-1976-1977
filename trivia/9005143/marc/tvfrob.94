@@ -1,0 +1,1359 @@
+
+<USE "ASYLUM" "MADMAN" "STR">
+
+<DEFINE MAKE.QUESTIONS ("AUX" TYPE (OUTCHAN ,OUTCHAN) (QSP ,QSPACE)
+			      (TVA ,TVASS) (SSP ,SSPACE) ITM VEC NEW FOOV
+			      COMPLEX?)
+   #DECL ((QUTCHAN) <CHANNEL FIX [9 STRING]> (QSP SSP) SPACE (TVA) ASYLUM
+	  (VEC) VECTOR (ITM) <LIST [REST FIX]> (NEW) <OR FALSE FIX>
+	  (COMPLEX?) <OR ATOM FALSE> (FOOV) <UVECTOR <PRIMTYPE WORD>>
+	  (TYPE) <OR FALSE SYMBOL FIX>)
+   <SET-STATUS ,$SMAKE>
+   <REPEAT (Q QUES HIQ QNUM (COAUTH 0))
+     #DECL ((Q) <OR FALSE LIST> (QUES) VECTOR (HIQ) <OR FALSE MANIAC> (QNUM) FIX
+	    (COAUTH) <OR FIX <LIST [REST STRING]>>)
+     <AND ,FLUSH <FLUSH-EM>>
+     <AND ,PNEWMAIL ,EXISTS <READ.MAIL> <SET-STATUS ,$SMAKE>>
+     <ARESET .QSP T <>>
+     <PROG ()
+	   <SET TYPE
+		<READER ,QTYPES
+			<TP "Question type: ">
+			'["" ""]
+			'["SYM"]
+			,VERBOSE>>
+	   <AND .TYPE
+		<==? <2 .TYPE> ,$TCOAUTH>
+		<SET COAUTH <BUFLEX <UPPERCASE <STRING <GETBUF "Other authors: ">>>>>
+		<AGAIN>>>
+     <COND (<NOT .TYPE> <RETURN>) (<SET TYPE <2 .TYPE>>)>
+     <COND (<0? .TYPE> <RETURN>)>
+     <SET-STATUS ,$SMAKE .TYPE>
+     <SET COMPLEX? <N==? .TYPE ,$TSIMPLE>>
+     <COND
+      (<SET Q <APPLY <NTH ,MAKERS .TYPE>>>
+       <SET QUES <AVECTOR .QSP 0 0 0 0 0 0 0 0 !.Q>>
+       <PUT .QUES ,QAUTH ,PLAYER>
+       <PUT .QUES ,QTYPE .TYPE>
+       <COND (.COMPLEX?
+	      <PROG (TMP)
+		    <COND (<SET TMP <DATA-RESERVE .TVA 1>>
+			   <PUT .QUES ,QSCORE .TMP>)
+			  (T <AGAIN>)>>
+	      <PUT .QUES
+		   ,QCAT
+		   <REPEAT (BAR)
+			   #DECL ((BAR) <OR SYMBOL FALSE>)
+			   <COND (<SET BAR
+				       <READER ,CATS
+					       <TP "Category: ">
+					       ""
+					       '["SYM"]
+					       ,VERBOSE>>
+				  <RETURN <2 .BAR>>)>>>
+	      <PUT .QUES
+		   ,QVAL
+		   <REPEAT (SC)
+			   #DECL ((SC) <OR FALSE FIX FLOAT>)
+			   <COND (<AND <SET SC
+					    <READER '[]
+						    <TP "Value: ">
+						    '[
+"
+Enter the value of this question (maximum 2.0)"
+						      ""]
+						    '["FIX" "FLOAT"]
+						    ,VERBOSE>>
+				       <L=? .SC 2>
+				       <G=? .SC 0>>
+				  <RETURN <FLOAT .SC>>)>>>)>
+       <CRLF>
+       <PUT .QUES ,QCOAUTH <ACOPY .QSP .COAUTH>>
+       <SET COAUTH 0>
+       <PUT .QUES
+	    ,QQNUM
+	    <SET QNUM <CHTYPE <DATA-READW .TVA ,HIQNUM> FIX>>>
+       <DATA-PRINTW .TVA ,HIQNUM <+ .QNUM 1>>
+       <PUT <SET FOOV ,TTUV> 1 .QNUM>
+       <PUT-LOC <+ ,PG ,BABBLE-HIQ> .FOOV>
+       <COND
+	(<SET NEW <CHAIN-APPEND .TVA .QSP .QUES ,HIQLOC>>
+	 <COND (.COMPLEX?
+		<DATA-PRINTW
+		 .TVA
+		 <+ ,1STCAT <NTH .QUES ,QCAT>>
+		 <+ <NTH .QUES ,QVAL>
+		    <CHTYPE <DATA-READW .TVA <+ ,1STCAT <NTH .QUES ,QCAT>>>
+			    FLOAT>>>
+		<DATA-PRINTW .TVA
+			     ,TOTSCR
+			     <+ <NTH .QUES ,QVAL>
+				<CHTYPE <DATA-READW .TVA ,TOTSCR> FLOAT>>>
+		<AND <SET HIQ <DATA-OPEN "PRINT" .TVA <+ ,LUBLK ,QASKED>>>
+		     <SET VEC <DATA-IREAD .TVA .HIQ <ARESET .SSP T <>>>>
+		     <SET ITM <NTH .VEC <NTH .QUES ,QCAT>>>
+		     <SET ITM <ACONS .SSP <NTH .QUES ,QQNUM> .ITM>>
+		     <PUT .VEC
+			  <NTH .QUES ,QCAT>
+			  <ACONS .SSP .NEW .ITM>>
+		     <DATA-IPRINT .TVA .HIQ .SSP .VEC>
+		     <DATA-CLOSE .TVA .HIQ>>)
+	       (T
+		<PROG (SLIST SMAN (SISP <COND (<GASSIGNED? SIMPLE-SPACE> ,SIMPLE-SPACE)
+					      (T <SETG SIMPLE-SPACE <AFIND 1>>)>)
+		       TEMP)
+		  #DECL ((SLIST TEMP) <LIST [REST TIME FIX FIX]>
+			 (SMAN) <OR FALSE MANIAC>
+			 (SISP) SPACE)
+		  <SETG SIMTABLE? <>>
+		  <COND (<SET SMAN <DATA-OPEN "PRINT" .TVA ,SIMPLE-LIST>>
+			 <SET SLIST <DATA-IREAD .TVA .SMAN <ARESET .SISP T <>>>>
+			 <PUTREST <REST <SET TEMP <ALIST .SISP ,PLAYER .QNUM .NEW>> 2>
+				  .SLIST>
+			 <DATA-IPRINT .TVA .SMAN .SISP .TEMP>
+			 <DATA-CLOSE .TVA .SMAN>)
+			(T
+			 <SLEEP .5>
+			 <AGAIN>)>>)>
+	 <CRLF>
+	 <PRINC "Question is #">
+	 <PRIN1 .QNUM>)
+	(<PERR "Can't make new question, MAKE.QUESTION" .QUES>)>)
+      (<CRLF> <PRINC "ERROR - "> <PRINC <1 .Q>> <CRLF>)>>>
+
+<DEFINE GRAB-BUNCH (STR "AUX" FROB FROBS (IDX 1) (QSP ,QSPACE)) 
+	#DECL ((STR) STRING (FROB) STRING (FROBS) LIST (IDX) FIX
+	       (QSP) SPACE)
+	<COND
+	 (<NOT <EMPTY? <SET FROB <GETBUF <STRING .STR "1: ">>>>>
+	  <SET FROBS <ALIST .QSP .FROB>>
+	  <REPEAT ((CRUFT .FROBS))
+		  <SET FROB
+		       <GETBUF <STRING .STR
+				       <UNPARSE <SET IDX <+ .IDX 1>>>
+				       ": ">>>
+		  <COND (<QUESTIONABLE? .FROB> <RETURN .FROBS>)>
+		  <SET CRUFT <REST <PUTREST .CRUFT <ALIST .QSP .FROB>>>>>)
+	 ('#FALSE ("Question aborted"))>>
+
+<SETG SCORED? <>>
+
+<GDECL (SCORED?) <OR ATOM FALSE>>
+
+<DEFINE ASK.QUESTIONS ("AUX" QUESTION? QUESTION (OUTCHAN .OUTCHAN)) 
+   #DECL ((QUESTION?) <SPECIAL <OR VECTOR FALSE>> (QUESTION) VECTOR
+	  (OUTCHAN) CHANNEL)
+   <UNWIND
+    <REPEAT ()
+	    <TERPRI>
+	    <AND ,PNEWMAIL ,EXISTS <READ.MAIL>>
+	    <COND (,FLUSH <FLUSH-EM>)
+		  (<SET QUESTION? <GETNEXTQ>>
+		   <SET-STATUS ,$SASK <NTH .QUESTION? ,QQNUM>>
+		   <SET QUESTION .QUESTION?>
+		   <ARESET ,ASPACE T <>>
+		   <COND (<OR <==? ,PLAYER <NTH .QUESTION ,QAUTH>>
+			      <AND <N==? <NTH .QUESTION ,QCOAUTH> 0>
+				   <MEMQ ,PLAYER <NTH .QUESTION ,QCOAUTH>>>>)
+			 (<APPLY <NTH ,ASKERS <NTH .QUESTION ,QTYPE>>
+				 .QUESTION>)>
+		   <PROGRESS>
+		   <SETG SCORED? <>>
+		   <COND (<OR ,KEEPASKING
+			      <PROG topask ()
+				    #DECL ((topask) <SPECIAL ACTIVATION>)
+				    <TRUE? "More "
+					   "Y/N"
+					   "Yy"
+					   "Nn"
+					   <ASCII 22>>>>)
+			 (<RETURN>)>)
+		  (T <RETURN <>>)>>
+    <COND (,SCORED? <SET SCORED? <>> <PROGRESS>)>>>
+
+<DEFINE GETNEXTQ ("AUX" (TVA ,TVASS) (QSP ,QSPACE)
+			(QNM <THISQ>) Q)
+	#DECL ((QNM) FIX (QSP) SPACE (TVA) ASYLUM (Q) <OR FALSE VECTOR>)
+	<PROG ()
+	      <COND (<N==? .QNM 0>
+		     <COND (<SET Q <DATA-AREAD .TVA .QNM <ARESET .QSP T <>>>>
+			    <PQHEADER .Q>
+			    .Q)
+			   (<PROGRESS> <AGAIN>)>)>>>
+
+<DEFINE PQHEADER (Q) 
+	#DECL ((Q) VECTOR)
+	<CRLF>
+	<PRINC "Question #">
+	<PRIN1 <NTH .Q ,QQNUM>>
+	<PRINC " by ">
+	<6PRINC <NTH .Q ,QAUTH>>
+	<COND (<N==? <NTH .Q ,QCOAUTH> 0>
+	       <PRINC " with ">
+	       <MAPF <>
+		     <FUNCTION (X) <6PRINC .X> <PRINC " ">>
+		     <NTH .Q ,QCOAUTH>>)>
+	<COND (<==? <NTH .Q ,QTYPE> 7> <PRINC "  Worthless">)
+	      (<PRINC "  Category: ">
+	       <PRINC <NTH <2 ,CATS> <- <* 2 <NTH .Q ,QCAT>> 1>>>
+	       <PRINC "  Worth: ">
+	       <PRIN1 <NTH .Q ,QVAL>>
+	       <PRINC " points">)>
+	<CRLF>
+	<CRLF>>
+
+<DEFINE THISQ ("AUX" (TVA ,TVASS) (QHI <+ ,LUBLK ,QNEXT>))
+	#DECL ((TVA) ASYLUM (QHI) FIX) 
+	<CHTYPE <DATA-READW .TVA <CHTYPE <DATA-READW .TVA .QHI> FIX>>
+		FIX>>
+
+<DEFINE PROGRESS ("AUX" (QHI <+ ,QNEXT ,LUBLK>) (TVA ,TVASS)
+			(QNM <CHTYPE <DATA-READW .TVA .QHI> FIX>) QNXT)
+	#DECL ((QHI QNM QNXT) FIX (TVA) ASYLUM)
+	<COND (<0? <SET QNXT <CHTYPE <DATA-READW .TVA .QNM> FIX>>>)
+	      (<DATA-PRINTW .TVA .QHI .QNXT>
+	       <PROG ((LOC <+ ,PG ,BABBLE-START ,TINDEX>) (TBUV ,TBUV))
+		     #DECL ((LOC) FIX (TBUV) <UVECTOR [4 FIX]>)
+		     <COND (<DHLOCK .LOC>
+			    <GET-LOC .LOC .TBUV>
+			    <PUT .TBUV
+				 2
+				 <PUTBITS <2 .TBUV>
+					  <BITS 18 0>
+					  <GETLASTQ ,LUBLK>>>
+			    <PUT-LOC .LOC .TBUV>
+			    <DUNLOCK .LOC>)
+			   (<SLEEP 2> <AGAIN>)>>)>>
+
+<DEFINE ANS-VEC (Q "TUPLE" STUFF "AUX" (ASP ,ASPACE)) 
+	#DECL ((Q) VECTOR (STUFF) TUPLE (ASP) SPACE)
+	<AVECTOR .ASP
+		 <THISQ>
+		 <NTH .Q ,QTYPE>
+		 ,PLAYER
+		 !.STUFF>>
+
+<DEFINE GRADE.STUFF () 
+	<SET-STATUS ,$SGRADE>
+	<DATA-PRINTW ,TVASS <+ ,LUBLK ,LASTGRD> <DSKDATE>>
+	<REPEAT ((LOC <+ ,PG ,TELEC-START ,TINDEX 3>))
+		#DECL ((LOC) FIX)
+		<AND ,FLUSH <FLUSH-EM>>
+		<AND ,PNEWMAIL ,EXISTS <READ.MAIL> <SET-STATUS ,$SGRADE>>
+		<COND (<CHAIN-FOLLOW ,READERS ,ANEXT ,ALAST .LOC>)
+		      (T <PUT-LOC .LOC <PUT ,NTTUV 1 0>> <RETURN>)>>>
+
+<DEFINE READ.MAIL () 
+	<SET-STATUS ,$SREAD>
+	<SETG EXISTS <>>
+	<REPEAT ()
+		<AND ,FLUSH <FLUSH-EM>>
+		<COND (<CHAIN-FOLLOW ,MREADERS ,MNEXT ,MLAST>) (<RETURN>)>>>
+
+<DEFINE PRINT.MAIL (ML) 
+	#DECL ((ML) VECTOR)
+	<PRINC "
+Message from ">
+	<6PRINC <3 .ML>>
+	<PDSKDATE <SETG LASTMAIL <4 .ML>>>
+	<CRLF>
+	<PRINC <1 .ML>>>
+
+<DEFINE QPRINT (A
+		"OPTIONAL" (MATCH-ANS <>) (QSP ,QSPACE)
+		"AUX" (TVA ,TVASS) Q QR)
+	#DECL ((A QR) VECTOR (QSP) SPACE (TVA) ASYLUM
+	       (MATCH-ANS) <OR ATOM FALSE> (Q) <OR VECTOR FALSE>)
+	<COND (<SET Q <DATA-AREAD .TVA <NTH .A ,AQUES> .QSP>>
+	       <PROG MORE-ACT
+		     ()
+		     #DECL ((MORE-ACT) <SPECIAL ACTIVATION>)
+		     <CRLF>
+		     <SET QR <REST .Q ,QQUES>>
+		     <CRLF>
+		     <PRINC "Re: Question #">
+		     <PRIN1 <NTH .Q ,QQNUM>>
+		     <CRLF>
+		     <COND (<NOT .MATCH-ANS>
+			    <COND (<==? <NTH .Q ,QTYPE> ,$TMATCH> <MATCH-PRINT .QR>)
+				  (<==? <NTH .Q ,QTYPE> ,$TRANK> <PRINC <4 .QR>>)
+				  (<PRINC <1 .QR>>)>
+			    <CRLF>)
+			   (<PRINC <5 .QR>> <CRLF> <CRLF>)>
+		     <6PRINC <NTH .A ,AAUTH>>>
+	       .Q)
+	      (<PERR "Can't read QUESTION, QPRINT" <NTH .A ,AQUES>>)>>
+
+<DEFINE UPDATE.QUESTION ("OPTIONAL" (COMPLEX? T)
+			 "AUX" QUES Q (QSP <ARESET ,QSPACE T <>>) (TVA ,TVASS)
+			       SYM QTOP)
+	#DECL ((QUES) <OR FALSE VECTOR> (Q) <OR FALSE LIST> (QSP) SPACE
+	       (TVA) ASYLUM (QTOP) VECTOR
+	       (SYM) <OR FALSE SYMBOL> (COMPLEX?) <OR ATOM FALSE>)
+	<SET-STATUS ,$SUPDATE>
+	<COND (<COND (.COMPLEX? <SET SYM <GET.QUESTION>>)
+		     (T <SET SYM <GET.SIMPLE <>>>)>
+	       <SET QUES <DATA-AREAD .TVA <2 .SYM> <ARESET ,ASPACE T <>>>>
+	       <SET-STATUS ,$SUPDATE <NTH .QUES ,QQNUM>>
+	       <COND (<SET Q <APPLY <NTH ,MAKERS <NTH .QUES ,QTYPE>> .QUES>>
+		      <SET QTOP <SUBSTRUC .QUES 0 ,QQUES>>
+		      <SET QUES <AVECTOR .QSP 0 0 0 0 0 0 0 0 !.Q>>
+		      <MAPR <>
+			    <FUNCTION (X Y) 
+				      #DECL ((X Y) VECTOR)
+				      <PUT .X 1 <ACOPY .QSP <1 .Y>>>>
+			    .QUES
+			    .QTOP>
+		      <PROG (LOSS)
+			    #DECL ((LOSS) <OR MANIAC <FALSE FIX>>)
+			    <COND (<SET LOSS
+					<DATA-APRINT .TVA <2 .SYM> .QSP .QUES>>)
+				  (<MEMQ <1 .LOSS> '(5 6)>
+				   <STALL <1 .LOSS>>
+				   <AGAIN>)
+				  (<PERR "Can't PRINT UPDATE, UPDATE.QUESTION"
+					 .LOSS>)>>)>)>>
+
+<DEFINE PRINT-QUESTION (QUES
+			"AUX" (QTYPE <QTYPE .QUES>) (RQ <REST .QUES ,QQUES>)
+			      CORRECT (QVAL <QVAL .QUES>))
+   #DECL ((QUES) <VECTOR FIX FIX FIX TIME ANY FIX ANY ANY ANY [REST ANY]>
+	  (QVAL) <OR FIX FLOAT> (QTYPE CORRECT) FIX (RQ) VECTOR)
+   <COND (<OR <==? .QTYPE ,$TSIMPLE> <==? .QTYPE ,$TLONG>>
+	  <PRINC <1 .RQ>>
+	  <COND (<NOT <LENGTH? .RQ 2>>
+		 <MAPR <>
+		       <FUNCTION (HINTS) 
+			       #DECL ((HINTS) <VECTOR [REST
+						       <OR STRING FLOAT>]>)
+			       <COND (<TYPE? <1 .HINTS> STRING>
+				      <CRLF>
+				      <PRINC "Hint [for ">
+				      <PRIN1 <* <2 .HINTS> .QVAL>>
+				      <PRINC " points]: ">
+				      <PRINC <1 .HINTS>>)>>
+		       <3 .RQ>>
+		 <CRLF>)>
+	  <COND (<N==? <LENGTH .RQ> 1>
+		 <CRLF>
+		 <PRINC "Answer: ">
+		 <PRINC <2 .RQ>>)>)
+	 (<OR <==? .QTYPE ,$TMC> <==? .QTYPE ,$TTF>>
+	  <SET CORRECT <3 .RQ>>
+	  <PUT <2 <2 ,ALLSYMS>> 2 <UNTASTEFUL-CODE <REST .RQ 3>>>
+	  <PRINC <1 .RQ>>
+	  <MSTPOSSYM!-ICALSYM "" 0 <2 ,ALLSYMS>>
+	  <CRLF>
+	  <PRINC "Correct answer is ">
+	  <PRINC <NTH <REST .RQ 3> .CORRECT>>
+	  <PRINC ".">
+	  <CRLF>
+	  <COND (<NOT <QUESTIONABLE? <2 .RQ>>>
+		 <PRINC "Comment: ">
+		 <PRINC <2 .RQ>>
+		 <CRLF>)>)
+	 (<==? .QTYPE ,$TMATCH>
+	  <MATCH-PRINT .RQ>
+	  <CRLF>
+	  <PRINC "Correct matchings:">
+	  <MATCH-PRINT .RQ T <> <>>
+	  <COND (<NOT <QUESTIONABLE? <4 .RQ>>>
+		 <PRINC "Comment: ">
+		 <PRINC <4 .RQ>>)>)
+	 (<==? .QTYPE ,$TRANK>
+	  <PRINC <4 .RQ>>
+	  <PRINT-RANK <2 .RQ> <UNTASTEFUL-CODE <1 .RQ> <> T>>
+	  <AND <NOT <QUESTIONABLE? <3 .RQ>>>
+	       <CRLF>
+	       <PRINC "Comment: ">
+	       <PRINC <3 .RQ>>>)>>
+
+;"MATCHING QUESTION ROUTINES"
+
+<DEFINE MAKE.MATCH ("OPTIONAL" UPDATE "AUX" C1 C2 TBL KEY HDR) 
+	#DECL ((C1 C2) <OR FALSE <LIST [REST STRING]>> (KEY) <OR FALSE LIST>
+	       (TBL) SYMTABLE (UPDATE) VECTOR (HDR) STRING)
+	<PROG ()
+	      <COND (<AND <SET HDR <GETBUF "Heading: ">>
+			  <NOT <QUESTIONABLE? .HDR>>
+			  <SET C1 <GRAB-BUNCH "Column A #">>
+			  <SET C2 <GRAB-BUNCH "Column B #">>>
+		     <SET TBL <MAKESST "TBL" <UNTASTEFUL-CODE .C2>>>
+		     <COND (<SET KEY <ACOPY ,QSPACE <GRAB-ANSWERS .C1 .TBL>>>
+			    (.C1 .C2 .KEY <GETBUF "Comment: "> .HDR))>)
+		    (T '#FALSE ("Question aborted"))>>>
+
+<DEFINE GRAB-ANSWERS (C1 TBL "AUX" (CURSPACE ,ASPACE) LST) 
+	#DECL ((C1) <SPECIAL <LIST [REST STRING]>> (TBL) SYMTABLE
+	       (LST) <OR LIST FALSE> (CURSPACE) <SPECIAL SPACE>)
+	<SET LST
+	     <MAPF ,ALLIST
+		   <FUNCTION (MCHOICE "AUX" CA) 
+			   #DECL ((MCHOICE) STRING (CA) <OR FALSE SYMBOL>)
+			   <SETG MATCH .MCHOICE>
+			   <PRINC "
+For ">
+			   <PRINC .MCHOICE>
+			   <COND (<SET CA
+				       <READER .TBL
+					       "which is the correct match? "
+					       '["" ""]
+					       '["SYM"]
+					       ,VERBOSE>>
+				  <MAPRET <ACOPY .CURSPACE <2 .CA>>>)
+				 (<MAPLEAVE
+				   #FALSE ("No correct answer given")>)>>
+		   .C1>>
+	<GUNASSIGN MATCH>
+	.LST>
+
+<SETG MATBL <MAKEGST "FROB" [0 T]>>
+
+<SETG MBTBL <MAKESST "FROB" []>>
+
+<SETG MATCH-SYMBOL <CHTYPE ["" 0] SYMBOL>>
+
+<SETG MATCH-SYM ["SYM" "DEF" ,MATCH-SYMBOL]>
+
+<GDECL (MATCH-SYMBOL) SYMBOL (MATCH-SYM) <VECTOR STRING STRING SYMBOL>>
+
+<DEFINE GRAB-MATCH ("AUX" (A ,MATBL) (B ,MBTBL) (S ,MATCH-SYMBOL)
+			  (CURSPACE ,ASPACE) (QUIT-D '["" -1])
+			  (AVEC <REST <2 .A> 2>) (SYM ,MATCH-SYM))
+	#DECL ((A B) SYMTABLE (CURSPACE) <SPECIAL SPACE>
+	       (SYM AVEC QUIT-D) VECTOR (S) SYMBOL)
+	<PUT .S 2 .AVEC>
+	<PUT .S 1 <1 .AVEC>>
+	<REPEAT (ACH BCH TEMP MSTR (TACH <REST <2 .A> 2>))
+		#DECL ((ACH BCH TEMP) <OR FALSE <PRIMTYPE VECTOR>>
+		       (TACH) <VECTOR ANY ANY> (MSTR) ANY)
+		<GUNASSIGN MATCH>
+		<COND (<AND <SET ACH <READER .A "
+Match " "" .SYM ,VERBOSE>>
+			    <N==? <2 <SET ACH <2 .ACH>>> -1>>
+		       <SETG MATCH <MEMQ <ASCII 46> ;"Char ." <1 .ACH>>>
+		       <COND (<SET BCH <READER .B "with " "" '["SYM"] ,VERBOSE>>
+			      <PUT .ACH 2 <2 .BCH>>
+			      <SET MSTR <MEMQ <ASCII 46> <1 .ACH>>>
+			      <PUT .MSTR 2 <ASCII 91>>
+			      <PUT .MSTR 3 <ASCII <+ 48 </ <2 .BCH> 10>>>>
+			      <AND <==? <3 .MSTR> <ASCII 48>>
+				   <PUT .MSTR 2 <ASCII 32>>
+				   <PUT .MSTR 3 <ASCII 91>>>
+			      <PUT .MSTR 4 <ASCII <+ 48 <MOD <2 .BCH> 10>>>>
+			      <PUT .MSTR 5 <ASCII 93>>)>
+		       <COND (<SET TEMP <MEMQ 0 .TACH>>
+			      <PUT .S 2 <SET TEMP <BACK .TEMP>>>
+			      <PUT .S 1 <1 .TEMP>>)
+			     (T <PUT .S 1 ""> <PUT .S 2 .QUIT-D>)>)
+		      (<RETURN <MAPF ,ALLIST
+				     <FUNCTION (X) 
+					     <COND (<TYPE? .X FIX> .X)
+						   (<MAPRET>)>>
+				     <REST <2 ,MATBL> 2>>>)>>>
+
+<DEFINE ASK.MATCH (Q
+		   "AUX" (RQ <REST .Q ,QQUES>) (ASP ,ASPACE) LOSER EACH
+			 SCORE)
+	#DECL ((Q RQ) VECTOR (ASP) SPACE (LOSER) <OR LIST FALSE>
+	       (EACH SCORE) FLOAT)
+	<CRLF>
+	<MATCH-PRINT .RQ>
+	<PUT ,MBTBL 2 <UNTASTEFUL-CODE <2 .RQ>>>
+	<PUT ,MATBL 2 <UNTASTEFUL-CODE <1 .RQ> T>>
+	<SET LOSER <GRAB-MATCH>>
+	<SET EACH </ <NTH .Q ,QVAL> <FLOAT <LENGTH .LOSER>>>>
+	<INT-LEVEL 20>
+	<ADDSCORE ,PLAYER
+		  .Q
+		  <SET SCORE
+		       <MAPF ,+
+			     <FUNCTION (X Y) 
+				     <COND (<N==? .X .Y> 0.000) (.EACH)>>
+			     .LOSER
+			     <3 .RQ>>>>
+	<SETG SCORED? T>
+	<INT-LEVEL 0>
+	<PRINC "
+
+Score of ">
+	<PRIN1 .SCORE>
+	<AND <ANSWER?>
+	     <PRINC "
+
+Correct matchings:">
+	     <MATCH-PRINT .RQ T <> <>>
+	     <CRLF>
+	     <NOT <QUESTIONABLE? <4 .RQ>>>
+	     <PRINC "Comment: ">
+	     <PRINC <4 .RQ>>>
+	<AND <NOT .LOSER> <SET LOSER <CHTYPE <ALIST .ASP> FALSE>>>
+	<SEND-PLAYER <NTH .Q ,QAUTH>
+		     <ANS-VEC .Q .SCORE .LOSER>
+		     ,ALAST
+		     <>
+		     ,TELEC-START>>
+
+<DEFINE MATCH-PRINT (RQ "OPTIONAL" (CORRECT <>) (C3 <>) (PRINT-HEAD T) (ANS
+									<>)) 
+	#DECL ((RQ) VECTOR (CORRECT PRINT-HEAD) <OR ATOM FALSE>
+	       (C3 ANS) <OR FALSE LIST>)
+	<COND
+	 (<OR <NOT .CORRECT> <AND .CORRECT <SET C3 <3 .RQ>>>>
+	  <CRLF>
+	  <COND (.PRINT-HEAD <PRINC <5 .RQ>> <CRLF>)>
+	  <PRINC "
+Column A                            Column B
+">
+	  <REPEAT ((C1 <1 .RQ>) (C2 <2 .RQ>) (IDX 1))
+		  #DECL ((C1 C2) LIST (IDX) FIX)
+		  <COND (<AND <EMPTY? .C1> <EMPTY? .C2> <RETURN>>)
+			(<EMPTY? .C1>
+			 <AND .CORRECT <RETURN>>
+			 <FORMAT <1 .C2> 36 .IDX>
+			 <SET C2 <REST .C2>>)
+			(<AND <EMPTY? .C2> <NOT .CORRECT>>
+			 <PRIN1 .IDX>
+			 <PRINC ". ">
+			 <PRINC <1 .C1>>
+			 <SET C1 <REST .C1>>)
+			(T
+			 <FORMAT <1 .C1> 0 .IDX>
+			 <FORMAT <COND (.CORRECT
+					<COND (<0? <1 .C3>> "--gave up--")
+					      (<NTH <2 .RQ> <1 .C3>>)>)
+				       (<1 .C2>)>
+				 36
+				 .IDX
+				 <AND .ANS <==? <1 .C3> <1 .ANS>>>>
+			 <SET C1 <REST .C1>>
+			 <OR <EMPTY? .C2> <SET C2 <REST .C2>>>)>
+		  <AND .CORRECT <SET C3 <REST .C3>>>
+		  <AND .ANS <SET ANS <REST .ANS>>>
+		  <SET IDX <+ .IDX 1>>
+		  <CRLF>>)
+	 (<PRINC "
+Gave up.">)>>
+
+<DEFINE FORMAT (STR NUM "OPTIONAL" IDX (STAR <>)) 
+	#DECL ((STAR) <OR ATOM FALSE> (STR) STRING (NUM IDX) FIX)
+	<COND (<0? .NUM>) (<INDENT-TO .NUM>)>
+	<AND <==? .NUM 36>
+	     <COND (.STAR <PRINC "* ">) (<PRINC "  ">)>>
+	<AND <ASSIGNED? IDX> <PRINC .IDX> <PRINC ". ">>
+	<COND (<G? <LENGTH .STR> 33> <PRINC .STR> <CRLF>)
+	      (<PRINC .STR>)>>
+
+<DEFINE READ.MATCH (A "AUX" Q.A KEY ANS) 
+	#DECL ((A Q.A) VECTOR (ANS KEY) <OR FALSE <LIST [REST FIX]>>)
+	<SET Q.A <QPRINT .A T>>
+	<PRINC " scored ">
+	<PRIN1 <NTH .A ,ARESP>>
+	<PRINC " points ">
+	<COND (<SET KEY <5 .A>>
+	       <SET ANS <NTH .Q.A <+ ,QQUES 3>>>
+	       <PUT .Q.A <+ ,QQUES 3> .KEY>
+	       <MATCH-PRINT <REST .Q.A ,QQUES> T <> <> .ANS>)
+	      (<PRINC " by giving up.">)>
+	<CRLF>>
+
+<DEFINE MATCH-HACK (X) .X>
+
+;"TRUE/FALSE AND MULTIPLE CHOICE QUESTION ROUTINES"
+
+<DEFINE MAKE.TF ("OPTIONAL" UPDATE) 
+	#DECL ((UPDATE) VECTOR)
+	<COND (<ASSIGNED? UPDATE> <MAKE.MC T .UPDATE>)
+	      (<MAKE.MC T>)>>
+
+<DEFINE MAKE.MC ("OPTIONAL" (T/F <>) UPDATE
+		 "AUX" QUESTION ANSWERS CORRECT.ANSWER TBL)
+	#DECL ((QUESTION) STRUCTURED (T/F) <OR 'T VECTOR FALSE>
+	       (ANSWERS) <OR FALSE <LIST [REST STRING]>> (UPDATE) VECTOR)
+	<AND <TYPE? .T/F VECTOR> <SET UPDATE .T/F> <SET T/F <>>>
+	<PROG ()
+	      <SET QUESTION
+		   <GETBUF "Question: "
+			   ,QSPACE
+			   ""
+			   <COND (<ASSIGNED? UPDATE>
+				  <NTH .UPDATE <+ ,QQUES 1>>)>>>
+	      <COND (<EMPTY? .QUESTION> <RETURN '#FALSE ("Question aborted")>)
+		    (<QUESTIONABLE? .QUESTION>
+		     <RETURN '#FALSE ("Empty QUESTION")>)>
+	      <COND (.T/F
+		     <SET ANSWERS
+			  (<ASTRING ,QSPACE "True">
+			   <ASTRING ,QSPACE "False">)>)
+		    (T
+		     <COND (<SET ANSWERS <GRAB-BUNCH "Answer#">>
+			    <COND (<L? <LENGTH .ANSWERS> 2>
+				   <RETURN '#FALSE ("Too few choices")>)>)
+			   (<RETURN '#FALSE ("Question aborted")>)>)>
+	      <SET CORRECT.ANSWER
+		   <READER <SET TBL <MAKESST "FJB" <UNTASTEFUL-CODE .ANSWERS>>>
+			   <TP "Correct answer is ">
+			   '["" ""]
+			   '["SYM"]
+			   ,VERBOSE>>
+	      <COND (.CORRECT.ANSWER
+		     (.QUESTION
+		      <GETBUF "Comment: " ,QSPACE .QUESTION>
+		      <2 .CORRECT.ANSWER>
+		      !.ANSWERS))
+		    ('#FALSE ("No correct answer given"))>>>
+
+<SETG IDUNNO " gave up.">
+
+<DEFINE ASK.MC (Q
+		"AUX" (RQ <REST .Q ,QQUES>) ANSWER ANSNUM CORRECT
+		      (ASP ,ASPACE) (SEEN 0))
+   #DECL ((Q RQ) VECTOR (SEEN ANSNUM CORRECT) FIX (ASP) SPACE)
+   <UNWIND
+    <PROG ()
+      <SET CORRECT <3 .RQ>>
+      <PUT <2 <2 ,ALLSYMS>> 2 <UNTASTEFUL-CODE <REST .RQ 3>>>
+      <PRINC <1 .RQ>>
+      <MSTPOSSYM!-ICALSYM "" 0 <2 ,ALLSYMS>>
+      <SET ANSWER
+	   <READER ,ALLSYMS
+		   <TP "Take your pick: ">
+		   '["" ""]
+		   '["SYM"]
+		   ,VERBOSE>>
+      <CRLF>
+      <COND (.ANSWER <SET ANSNUM <2 .ANSWER>>) (<SET ANSNUM 0>)>
+      <INT-LEVEL 20>
+      <SET SEEN 1>
+      <COND (<==? .ANSNUM .CORRECT>
+	     <ADDSCORE ,PLAYER .Q <NTH .Q ,QVAL>>
+	     <PRINC "Right! ">
+	     <SET SEEN 0>)
+	    (T
+	     <ADDSCORE ,PLAYER .Q 0>
+	     <COND (<NOT .ANSWER> <PRINC "Chicken! ">)
+		   (<PRINC "Wrong! ">)>
+	     <PRINC "The correct answer is ">
+	     <PRINC <NTH <REST .RQ 3> .CORRECT>>
+	     <PRINC <ASCII 46> ;"Char .">
+	     <SET SEEN 0>)>
+      <SETG SCORED? T>
+      <INT-LEVEL 0>
+      <AND <NOT <QUESTIONABLE? <2 .RQ>>>
+	   <ANSWER?>
+	   <CRLF>
+	   <PRINC "Comment: ">
+	   <PRINC <2 .RQ>>
+	   <CRLF>>
+      <SEND-PLAYER
+       <NTH .Q ,QAUTH>
+       <ANS-VEC .Q
+		<COND (<==? .ANSNUM .CORRECT> <ASTRING .ASP " won.">)
+		      (<NOT .ANSWER> <ASTRING .ASP ,IDUNNO>)
+		      (<ASTRING .ASP
+				" lost with "
+				<REST <MEMBER ". " <1 .ANSWER>> 2>>)>>
+       ,ALAST
+       <>
+       ,TELEC-START>
+      <CRLF>>
+    <COND (<1? .SEEN>
+	   <COND (<==? .ANSNUM .CORRECT> <ADDSCORE ,PLAYER .Q <QVAL .Q>>)
+		 (T <ADDSCORE ,PLAYER .Q 0>)>
+	   <SETG SCORED? T>)>>>
+
+<DEFINE READ.MC (A "AUX" Q.A) 
+	#DECL ((A Q.A) VECTOR)
+	<SET Q.A <QPRINT .A>>
+	<PRINC <NTH .A ,ARESP>>
+	<CRLF>>
+
+;"REGULAR QUESTION ROUTINES"
+
+<DEFINE MAKE.REGULAR ("OPTIONAL" UPDATE "AUX" Q A (CURSPACE ,QSPACE) HINTS) 
+   #DECL ((Q A) <OR FALSE STRING> (UPDATE HINTS) VECTOR
+	  (CURSPACE) <SPECIAL SPACE>)
+   <COND
+    (<EMPTY? <SET Q
+		  <GETBUF "Question: "
+			  .CURSPACE
+			  ""
+			  <COND (<ASSIGNED? UPDATE>
+				 <NTH .UPDATE <+ ,QQUES 1>>)>>>>
+     '#FALSE ("Question aborted"))
+    (<QUESTIONABLE? .Q> '#FALSE ("Empty question"))
+    (<AND
+      <SET HINTS
+       <MAPF ,ALVECTOR
+	<FUNCTION ("AUX" HINT NVALUE) 
+	   #DECL ((HINT) STRING (NVALUE) <OR FALSE FLOAT>)
+	   <COND (<AND <SET HINT <GETBUF "Hint: " .CURSPACE "">>
+		       <NOT <QUESTIONABLE? .HINT>>
+		       <PROG ()
+			     <COND (<OR <G=? <SET NVALUE
+						  <READER '[]
+							  "Fractional credit "
+							  ""
+							  '["FLOAT"]
+							  ,VERBOSE>>
+					     1.000>
+					<L=? .NVALUE 0.000>>
+				    <CRLF>
+				    <PRINC "Out of range">
+				    <AGAIN>)>
+			     .NVALUE>>
+		  <MAPRET .HINT .NVALUE>)
+		 (<MAPSTOP>)>>>>
+      <>>)
+    (<EMPTY?
+      <SET A
+	   <PROG ((aprompt .Q))
+		 #DECL ((aprompt) <SPECIAL STRING>)
+		 <GETBUF "Answer: "
+			 .CURSPACE
+			 ""
+			 <COND (<ASSIGNED? UPDATE>
+				<COND (<G=? <LENGTH .UPDATE> <+ ,QQUES 2>>
+				       <NTH .UPDATE <+ ,QQUES 2>>)
+				      ("")>)>>>>>
+     (.Q <ALSTRING>))
+    (<QUESTIONABLE? .A> (.Q <ALSTRING>))
+    (ELSE (.Q .A .HINTS))>>
+
+<DEFINE ASK.REGULAR (Q
+		     "AUX" (RQ <REST .Q ,QQUES>) (ANSWER "")
+			   (CURSPACE ,SSPACE) (ASP ,ASPACE) (SEEN 0)
+			   (HVAL -1.000) (HNUM 0))
+   #DECL ((Q RQ) VECTOR (ANSWER) STRING (ASP) SPACE (SEEN HNUM) FIX
+	  (HVAL) FLOAT (CURSPACE) <SPECIAL SPACE>)
+   <UNWIND
+    <PROG ((QVAL <QVAL .Q>)
+	   (HINTS <COND (<LENGTH? .RQ 2> '[]) (<3 .RQ>)>))
+      #DECL ((HINTS) VECTOR (QVAL) <OR FLOAT FIX>)
+      <PRINC <1 .RQ>>
+      <PROG ()
+	    <SET ANSWER
+	     <GETBUF
+	      <ASTRING <ARESET .CURSPACE T <>>
+		       <MAPR ,ALSTRING
+			     <FUNCTION (X) 
+				     <COND (<==? .X .HINTS> <MAPSTOP>)
+					   (<TYPE? <1 .X> STRING>
+					    <MAPRET "Hint: " <1 .X> "
+">)
+					   (<MAPRET>)>>
+			     <TOP .HINTS>>
+		       <COND (<EMPTY? .HINTS> "
+Your answer: ")
+			     (<ASTRING .CURSPACE
+				       "
+Your answer [Hint for "
+				       <UNPARSE <* .QVAL <2 .HINTS>>>
+				       " points] : ">)>>
+	      .ASP
+	      <1 .RQ>>>
+	    <COND (<AND <QUESTIONABLE? .ANSWER> <NOT <EMPTY? .HINTS>>>
+		   <CRLF>
+		   <SET HNUM <+ .HNUM 1>>
+		   <SET HVAL <* <2 .HINTS> .QVAL>>
+		   <SET HINTS <REST .HINTS 2>>
+		   <AGAIN>)>>
+      <AND <ANSWER?>
+	   <SET SEEN 1>>
+      <INT-LEVEL 20>
+      <COND (<QUESTIONABLE? .ANSWER>
+	     <ADDSCORE ,PLAYER .Q 0.000>
+	     <SEND-PLAYER <NTH .Q ,QAUTH>
+			  <ANS-VEC .Q <ASTRING .ASP " gave up."> .SEEN>
+			  ,ALAST
+			  <>
+			  ,TELEC-START>)
+	    (T
+	     <SEND-PLAYER <NTH .Q ,QAUTH>
+			  <ANS-VEC .Q .ANSWER .SEEN .HNUM .HVAL>
+			  ,ALAST
+			  <>
+			  ,TELEC-START>)>
+      <COND (<N==? <LENGTH .RQ> 1>
+	     <AND <1? .SEEN>
+		  <CRLF>
+		  <PRINC "Answer is: ">
+		  <PRINC <2 .RQ>>
+		  <CRLF>>)>
+      <SETG SCORED? T>
+      <INT-LEVEL 0>
+      <CRLF>>
+    <COND (<OR <G? .HNUM 0> <1? .SEEN>>
+	   <COND (<QUESTIONABLE? .ANSWER> <ADDSCORE ,PLAYER .Q 0.000>)
+		 (T
+		  <SEND-PLAYER <QAUTH .Q>
+			       <ANS-VEC .Q .ANSWER .SEEN>
+			       ,ALAST
+			       <>
+			       ,TELEC-START>)>
+	   <SETG SCORED? T>)>>>
+
+<DEFINE READ.COMM (A "AUX" Q.A) 
+	#DECL ((A Q.A) VECTOR)
+	<SET Q.A <QPRINT .A>>
+	<PRINC " awarded ">
+	<PRIN1 <4 .A>>
+	<PRINC " points out of ">
+	<PRIN1 <QVAL .Q.A>>
+	<COND (<G? <LENGTH .A> 5>
+	       <COND (<6 .A> 
+		      <PRINC " for your answer 
+'">		      <PRINC <6 .A>>
+	     	      <PRINC "'">)
+		     (<PRINC " for chickening out">)>)>
+	<COND (<QUESTIONABLE? <5 .A>>
+	       <PRINC ".">)
+	      (<PRINC " and said 
+'">	       <PRINC <5 .A>>
+	       <PRINC "'">)>>
+
+<DEFINE READ.REGULAR (A
+		      "AUX" Q.A (ASP ,ASPACE) (QSP ,QSPACE) (LBK ,LUBLK)
+			    COMM (TVA ,TVASS) (GAVE-UP <>) TEMP)
+	#DECL ((A Q.A) <SPECIAL VECTOR> (ASP QSP) SPACE (COMM) STRING
+	       (LBK TEMP) FIX (TVA) ASYLUM (GAVE-UP) <OR ATOM FALSE>)
+	<SET Q.A <QPRINT .A <> .ASP>>
+	<COND (<AND <NOT <LENGTH? .A ,ASEEN>>
+		    <N==? <SET TEMP <NTH .A ,AHNUM>> 0>>
+	       <PRINC ", with ">
+	       <PRIN1 .TEMP>
+	       <PRINC <COND (<1? .TEMP> " hint, ") (T " hints, ")>>)>
+	<COND (<=? <NTH .A ,ARESP> ,IDUNNO>
+	       <PRINC ,IDUNNO>
+	       <SET GAVE-UP T>)
+	      (<PRINC " said :
+"> <PRINC <NTH .A ,ARESP>>)>
+	<ARESET .QSP T <>>
+	<CRLF>
+	<AND <G=? <LENGTH .A> ,ASEEN>
+	     <==? <NTH .A ,ASEEN> 1>
+	     <PRINC "[Answer seen] ">>
+	<SET COMM <GETBUF "Comment: " .QSP <NTH .A ,ARESP>>>
+	<REPEAT ((SCORE 0)
+		 (MARKING
+		  <COND (<AND <NOT <LENGTH? .A ,ASEEN>> <N==? <AHNUM .A> 0>>
+			 <NTH .A ,AHVAL>)
+			(<NTH .Q.A ,QVAL>)>))
+		#DECL ((SCORE) <OR FIX FALSE FLOAT>
+		       (MARKING) <SPECIAL <OR FLOAT FIX>>)
+		<COND (<OR .GAVE-UP
+			   <AND <AND <PRINC "Score (out of ">
+				     <PRIN1 .MARKING>
+				     <PRINC ")">
+				     <SET SCORE
+					  <READER '[]
+						  " : "
+						  '["" ""]
+						  '["FIX" "FLOAT"]
+						  ,VERBOSE>>
+				     <G=? .SCORE 0>
+				     <L=? .SCORE .MARKING>>
+				<CRLF>
+				<ADDSCORE <NTH .A ,AAUTH> .Q.A .SCORE>>>
+		       <OR <AND .GAVE-UP <QUESTIONABLE? .COMM>>
+			   <SEND-PLAYER <NTH .A ,AAUTH>
+					<AVECTOR .QSP
+						 <NTH .A ,AQUES>
+						 ,$TLOSE
+						 ,PLAYER
+						 .SCORE
+						 .COMM
+						 <AND <NOT .GAVE-UP>
+						      <ACOPY .QSP <NTH .A ,ARESP>>>>
+					,ALAST
+					<>
+					,TELEC-START
+					.QSP>>
+		       <RETURN>)
+		      (<NOT .SCORE>
+		       <CHAIN-APPEND .TVA .ASP .A <+ .LBK ,ALAST>>
+		       <PRINC "
+Grading postponed.">
+		       <RETURN>)
+		      (<PRINC "
+Illegal score (above VALUE or below 0)
+">)>>>
+
+;"SIMPLE QUESTION HACKERS.  BY DEFINITION, LOSERS."
+
+<DEFINE ASK.SIMPLE (Q
+		    "AUX" (RQ <REST .Q ,QQUES>) ANSWER (ASP ,ASPACE)
+			  (SEEN 0))
+	#DECL ((Q RQ) VECTOR (ANSWER) STRING (ASP) SPACE (SEEN) FIX)
+	<COND
+	 (,IGNORE-SIMPLE)
+	 (<PRINC <1 .RQ>>
+	  <COND (<N==? <LENGTH .RQ> 1>
+		 <AND <ANSWER?>
+		      <SET SEEN 1>
+		      <CRLF>
+		      <PRINC "Answer is: ">
+		      <PRINC <2 .RQ>>
+		      <CRLF>
+		      <SET ANSWER <GETBUF "Nonsense: " .ASP <1 .RQ>>>
+		      <COND (<NOT <QUESTIONABLE? .ANSWER>>
+			     <SEND-PLAYER <NTH .Q ,QAUTH>
+					  <ANS-VEC .Q .ANSWER .SEEN>
+					  ,ALAST
+					  <>
+					  ,TELEC-START>)>>)
+		(T
+		 <CRLF>
+		 <SET ANSWER <GETBUF "Nonsense: " .ASP <1 .RQ>>>
+		 <COND (<NOT <QUESTIONABLE? .ANSWER>>
+			<SEND-PLAYER <NTH .Q ,QAUTH>
+				     <ANS-VEC .Q .ANSWER .SEEN>
+				     ,ALAST
+				     <>
+				     ,TELEC-START>)>)>
+	  <CRLF>)>>
+
+<DEFINE READ.SANS (A "AUX" Q.A) 
+	#DECL ((A Q.A) VECTOR)
+	<SET Q.A <QPRINT .A>>
+	<PRINC " said
+'">
+	<PRINC <NTH .A ,ARESP>>
+	<PRINC <ASCII 39>>>
+
+<DEFINE PRINT.SIMPLE ("AUX" (TVA ,TVASS) (QSP ,QSPACE) SYML) 
+	#DECL ((TVA) ASYLUM (QSP) SPACE (SYML) <OR FALSE <LIST [REST SYMBOL]>>)
+	<COND (<SET SYML <GET.SIMPLE T>>
+	       <PROG MORE-ACT
+		     ()
+		     #DECL ((MORE-ACT) <SPECIAL ACTIVATION>)
+		     <CRLF>
+		     <MAPF <>
+			   <FUNCTION (X "AUX" QUES) 
+				     #DECL ((X) SYMBOL (QUES) VECTOR)
+				     <SET QUES
+					  <DATA-AREAD .TVA <2 .X> <ARESET .QSP T <>>>>
+				     <PQHEADER .QUES>
+				     <PRINT-QUESTION .QUES>
+				     <CRLF>>
+			   .SYML>>)>>
+
+;"FUNCTIONS TO HACK RANKING QUESTIONS"
+
+
+<DEFINE GRADE-RANK (L1 L2
+		    "AUX" (I <LENGTH .L2>) (N <FLOAT <LENGTH .L1>>)
+			  (TOTAL 0.000) MAXTOT PFACT LM
+			  (L3 <IUVECTOR <LENGTH .L1> 0>))
+	#DECL ((L1 L2 L3) <UVECTOR [REST FIX]>
+	       (N VALUE MAXTOT PFACT TOTAL) FLOAT (I) FIX
+	       (LM) <OR FALSE UVECTOR>)
+  <PROG ()
+	<COND (<N==? <LENGTH .L1> <LENGTH .L2>>
+	       <COND (<0? <+ !.L2>> <RETURN 0.0>)>
+	       <SET L3 <REST <SUBSTRUC .L2 0 .I .L3> .I>>
+	       <MAPF <>
+		     <FUNCTION (X) 
+			     <COND (<MEMQ .X .L2>)
+				   (T
+				    <PUT .L3 1 .X>
+				    <COND (<EMPTY? <SET L3 <REST .L3>>>
+					   <MAPLEAVE>)>)>>
+		     .L1>
+	       <SET L2 <TOP .L3>>)>
+	<SET MAXTOT <* .I <- <* 2.000 .N> .I 1>>>
+	<SET PFACT </ .MAXTOT .I 2.000>>
+	<REPEAT ((CT 0))
+		<COND (<G? <SET CT <+ .CT 1>> .I>
+		       <RETURN <COND (<0? .MAXTOT> 0.000)
+				     (</ .TOTAL .MAXTOT>)>>)>
+		<COND (<NOT <SET LM <MEMQ <1 .L1> .L2>>>)
+		      (<SET TOTAL
+			    <+ .TOTAL
+			       <COND (<==? <LENGTH .L1> <LENGTH .LM>> .PFACT)
+				     (ELSE 0.000)>
+			       <REPEAT ((R1 <REST .L1>) (R2 <REST .LM>)
+					(M 0.000))
+				       #DECL ((R1 R2) <UVECTOR [REST FIX]>
+					      (M) FLOAT)
+				       <COND (<EMPTY? .R1> <RETURN .M>)
+					     (<MEMQ <1 .R1> .R2>
+					      <SET M <+ .M 1.000>>)>
+				       <SET R1 <REST .R1>>>>>)>
+		<SET L1 <REST .L1>>>>>
+
+"<UN-RANK rank-uvector possibility-number>, returns rank-vector
+ <CHANGE-RANK rank-uvector new-rank possibility>
+ <RANK-BEFORE rank-uvector before-rank poss>
+ <RANK-AFTER rank-uvector after-rank poss>
+"
+
+"backwards memq, of course"
+
+<DEFINE QMEM (ITM STRUC "AUX" (TS <TOP .STRUC>))
+	#DECL ((ITM) ANY (TS STRUC) UVECTOR (VALUE) <OR FALSE UVECTOR>)
+	<COND (<==? .STRUC .TS> <>)
+	      (<SET STRUC <BACK .STRUC>>
+	       <REPEAT ()
+		<COND (<==? .ITM <1 .STRUC>> <RETURN .STRUC>)
+		      (<==? .STRUC .TS> <RETURN <>>)
+		      (<SET STRUC <BACK .STRUC>>)>>)>>
+
+<DEFINE UN-RANK (RV POSS "OPTIONAL" FOO "AUX" (CH? <MEMQ .POSS .RV>)) 
+	#DECL ((VALUE RV) UVECTOR (POSS) FIX (CH?) <OR UVECTOR FALSE> (FOO) ANY)
+	<COND (.CH? <PUT .CH? 1 0>)>
+	.RV>
+
+<DEFINE RANK-AS (RV NR POSS) 
+	#DECL ((RV VALUE) UVECTOR (POSS NR NPOS) FIX)
+	<SET NPOS <+ .NR 1>>
+	<COND (<OR <G? .NR <LENGTH .RV>> <L=? .NR 0>> .RV)
+	      (ELSE <UN-RANK .RV .POSS> <PUT .RV .NR .POSS>)>>
+
+<DEFINE RANK-BEFORE (RV INPOS POSS "AUX" (L <MEMQ .INPOS .RV>) AH BH TMP) 
+	#DECL ((RV VALUE) UVECTOR (TMP POSS NR INPOS) FIX
+	       (L AH BH) <OR FALSE UVECTOR>)
+	<COND (<==? .INPOS .POSS>)
+	      (.L
+	       <UN-RANK .RV .POSS>
+	       <SET BH <QMEM 0 .L>>
+	       <SET AH <MEMQ 0 .L>>
+	       <COND (<OR <AND .BH
+			       .AH
+			       <L=? <- <LENGTH .BH> <LENGTH .L>>
+				    <- <LENGTH .L> <LENGTH .AH>>>>
+			  <AND .BH <NOT .AH>>>
+		      <STUFF-BEFORE .L .POSS>)
+		     (ELSE
+		      <SET TMP <1 .L>>
+		      <PUT .L 1 .POSS>
+		      <STUFF-AFTER .L .TMP>)>)>
+	.RV>
+
+<DEFINE STUFF-BEFORE (L POSS "AUX" (RV <TOP .L>) TMP) 
+	#DECL ((L RV) UVECTOR (POSS TMP) FIX)
+	<OR <==? .L .RV> <SET L <BACK .L>>>
+	<REPEAT ()
+		<SET TMP <1 .L>>
+		<PUT .L 1 .POSS>
+		<COND (<==? .L .RV> <RETURN>)>
+		<COND (<0? .TMP> <RETURN>)>
+		<SET POSS .TMP>
+		<SET L <BACK .L>>>>
+
+<DEFINE RANK-AFTER (RV INPOS POSS "AUX" TMP AH BH (L <MEMQ .INPOS .RV>)) 
+	#DECL ((RV VALUE) UVECTOR (NPOS INPOS TMP POSS NR) FIX
+	       (L AH BH) <OR FALSE UVECTOR>)
+	<COND (<==? .INPOS .POSS>)
+	      (.L
+	       <UN-RANK .RV .POSS>
+	       <SET NPOS .POSS>
+	       <SET BH <QMEM 0 .L>>
+	       <SET AH <MEMQ 0 .L>>
+	       <COND (<OR <AND .BH
+			       .AH
+			       <L=? <- <LENGTH .L> <LENGTH .AH>>
+				    <- <LENGTH .BH> <LENGTH .L>>>>
+			  <AND .AH <NOT .BH>>>
+		      <STUFF-AFTER .L .POSS>)
+		     (ELSE
+		      <SET TMP <1 .L>>
+		      <PUT .L 1 .POSS>
+		      <STUFF-BEFORE .L .TMP>)>)>
+	.RV>
+
+<DEFINE STUFF-AFTER (L POSS "AUX" TMP) 
+	<OR <EMPTY? .L> <SET L <REST .L>>>
+	<REPEAT ()
+		<COND (<EMPTY? .L> <RETURN>)>
+		<SET TMP <1 .L>>
+		<PUT .L 1 .POSS>
+		<COND (<0? .TMP> <RETURN>)>
+		<SET POSS .TMP>
+		<SET L <REST .L>>>>
+
+<SETG ORDERS <MAKEGST "KJL" [1 1 "increasing order" "decreasing order"]>>
+
+<DEFINE GET-RANK-HEADER ("AUX" ZORK)
+	#DECL ((ZORK) VECTOR)
+	<SET ZORK <READARGS '[] 
+		 	    "
+Rank the following " 
+			    "" 
+		 	    '["TEXT"]
+			    ,ORDERS
+			    "in "
+			    ""
+			    '["SYM"]
+			    '[]
+			    "of "
+			    ""
+			    '["TEXT"]>>
+	<AND <NOT <QUESTIONABLE? <1 .ZORK>>>
+	     <2 .ZORK>
+	     <NOT <QUESTIONABLE? <3 .ZORK>>>
+	     <ASTRING ,QSPACE
+		      "Rank the following "
+		      <1 .ZORK>
+		      " by "
+		      <1 <2 .ZORK>>
+		      " of "
+		      <3 .ZORK>>>>	
+
+<DEFINE MAKE.RANK ("AUX" HDR C1 KEY NUM TBL)
+	#DECL ((HDR) STRING (C1) <OR FALSE <LIST [REST STRING]>> (TBL) SYMTABLE
+	       (NUM) <OR FALSE FIX> (KEY) <OR FALSE <UVECTOR [REST FIX]>>)
+	<COND (<AND <SET HDR <GET-RANK-HEADER>>
+		    <SET C1 <GRAB-BUNCH "Choice #">>
+		    <G? <LENGTH .C1> 2>>
+	       <SET TBL <MAKESST "FOO" <UNTASTEFUL-CODE .C1 <> T>>>
+	       <COND (<AND <SET KEY <PULL-RANK .TBL>> 
+			   <NOT <MEMQ 0 .KEY>>>
+		      <SET NUM
+			<REPEAT (TMP)
+			   <COND (<SET TMP <READER '[] "
+How many to rank: " "" '["FIX"] ,VERBOSE>>
+				  <AND <G? .TMP 1>
+				       <L=? .TMP <LENGTH .KEY>>
+				       <RETURN .TMP>>)
+				 (<RETURN <LENGTH .KEY>>)>>>
+		      (.C1 .KEY <GETBUF "Comment: "> .HDR .NUM))
+		     ('#FALSE ("Question aborted"))>)
+	      ('#FALSE ("Question aborted"))>>
+
+<DEFINE ASK.RANK (Q
+		  "AUX" (RQ <REST .Q ,QQUES>) (RAMT <5 .RQ>) (ASP ,ASPACE)
+			SCORE TBL ANS)
+	#DECL ((Q RQ) VECTOR (ASP) SPACE (SCORE) FLOAT (TBL) <SPECIAL SYMTABLE>
+	       (ANS) <UVECTOR [REST FIX]> (RAMT) FIX)
+	<PRINC <4 .RQ>>
+	<CRLF>
+	<PRINC "Number to rank: ">
+	<PRIN1 .RAMT>
+	<SET TBL <MAKESST "FOO" <UNTASTEFUL-CODE <1 .RQ> <> T>>>
+	<CRLF>
+	<SSTPOSSYM!-ICALSYM "" 0 <2 .TBL>>
+	<SET SCORE
+	     <* <GRADE-RANK <2 .RQ> <SET ANS <PULL-RANK .TBL .ASP <5 .RQ>>>>
+		<QVAL .Q>>>
+	<INT-LEVEL 20>
+	<ADDSCORE ,PLAYER .Q .SCORE>
+	<INT-LEVEL 0>
+	<PRINC "
+Score: ">
+	<PRIN1 .SCORE>
+	<AND <ANSWER?>
+	     <PRINC "
+Correct ranking: ">
+	     <PRINT-RANK <2 .RQ> <2 .TBL>>
+	     <CRLF>
+	     <NOT <QUESTIONABLE? <3 .RQ>>>
+	     <PRINC "Comment: ">
+	     <PRINC <3 .RQ>>>
+	<SEND-PLAYER <NTH .Q ,QAUTH>
+		     <ANS-VEC .Q .SCORE .ANS>
+		     ,ALAST
+		     <>
+		     ,TELEC-START>>
+
+<DEFINE READ.RANK (A "AUX" Q.A) 
+	#DECL ((A Q.A) VECTOR)
+	<SET Q.A <QPRINT .A>>
+	<PRINC " scored ">
+	<PRIN1 <NTH .A ,ARESP>>
+	<PRINC " points with ">
+	<PRINT-RANK <5 .A>
+		    <UNTASTEFUL-CODE <NTH .Q.A <+ ,QQUES 1>> <> T>>>
+
+<DEFINE PRINT-RANK (UV TBL "AUX" (CNT 0)) 
+	#DECL ((UV) <UVECTOR [REST FIX]> (TBL) <VECTOR [REST STRING FIX]>
+	       (CNT) FIX)
+	<MAPF <>
+	      <FUNCTION (X) 
+		      #DECL ((X) FIX)
+		      <CRLF>
+		      <PRINC <SET CNT <+ .CNT 1>>>
+		      <PRINC " ==> ">
+		      <COND (<0? .X>) (<PRINC <NTH .TBL <- <* .X 2> 1>>>)>>
+	      .UV>
+	<CRLF>>
+
+<SETG NUMTBL <MAKEGST "FKJL" [2 ,NTH]>>
+
+<SETG GROSSTBL <MAKESST "FOKJL" []>>
+
+<SETG OPTBL <MAKEBST "KJLKL" ["Print" -2 "Terminate" -1]>>
+
+<SETG FWEEPTBL <MAKESST "KJLKJLKJ" []>>
+
+<SETG ZONKTBL <MAKEMST "KJK" [,FWEEPTBL ,OPTBL]>>
+
+<DEFINE PULL-RANK (TBL
+		   "OPTIONAL" (SP ,QSPACE) (RLEN </ <LENGTH <2 .TBL>> 2>)
+		   "AUX" VERB (RUVEC <IUVECTOR .RLEN 0>) (IDX 0))
+   #DECL ((TBL) <SPECIAL SYMTABLE> (IDX RLEN) FIX
+	  (RUVEC) <SPECIAL <UVECTOR [REST FIX]>> (SP) SPACE
+	  (VERB) <OR 'T FALSE>)
+   <UNWIND
+    <PROG ()
+      <SETG COMPLETES " ,">
+      <SET VERB ,VERBOSE>
+      <SETG VERBOSE <>>
+      <PUT ,NUMTBL
+	   2
+	   <MAPF ,VECTOR
+		 <FUNCTION () 
+			 <SET IDX <+ .IDX 1>>
+			 <AND <G? .IDX .RLEN> <MAPSTOP>>
+			 <COND (<1? .IDX> <MAPRET 1 ,NTH "1">)
+			       (<UNPARSE .IDX>)>>>>
+      <REPEAT (FN FST COMM COMMAND NUM RANKING NUP M RLENGTH (L1? T)
+	       (UNRANK? <>) NPOS DEFAULT?)
+	#DECL ((FN) APPLICABLE (COMM) <OR FALSE VECTOR> (NUM) FIX (NUP) STRING
+	       (FST RANKING COMMAND) <SPECIAL ANY> (M) <OR FALSE UVECTOR>
+	       (RLENGTH) <SPECIAL FIX> (L1? UNRANK?) <SPECIAL <OR ATOM FALSE>>
+	       (NPOS) <SPECIAL FIX> (DEFAULT?) <SPECIAL <OR ATOM FALSE>>)
+	<SET L1? T>
+	<SET UNRANK? <>>
+	<PUT ,RANKDEFSYM
+	     2
+	     <SET NUM
+		  <COND (<SET M <MEMQ 0 .RUVEC>>
+			 <SET DEFAULT? T>
+			 <+ 1 <- <LENGTH .RUVEC> <LENGTH .M>>>)
+			(T
+			 <SET DEFAULT? <>>
+			 -1)>>>
+	<SET NUP <UNPARSE .NUM>>
+	<PUT ,RANKDEFSYM 1 <COND (<L? .NUM 0> "") (.NUP)>>
+	<PUT ,FWEEPTBL 2 <2 .TBL>>
+	<COND (<SET COMM
+		    <READARGS RANKING
+			      ,ZONKTBL
+			      "
+Rank "
+			      '["" ""]
+			      '["SYM" "MULT"]
+			      COMMAND
+			      '<COND (<EMPTY? .RANKING>
+				      #FALSE (T)
+				      <SET L1? <>>)
+				     (<N==? <SET RLENGTH <LENGTH .RANKING>> 1>
+				      <SET L1? <>>
+				      ,RCOMS)
+				     (<L? <2 <SET FST <1 .RANKING>>> 0>
+				      #FALSE (T))
+				     (,RCOMS)>
+			      " "
+			      '["" ""]
+			      ,RCOMDEF
+			      '<COND (<==? .COMMAND T> #FALSE (T))
+				     (<OR <AND .L1? <L? <2 .FST> 0>>
+					  <AND <=? <1 .COMMAND> "nowhere">
+					       <SET UNRANK? T>>>
+				      #FALSE (T))
+				     (<=? <1 .COMMAND> "as "> ,NUMTBL)
+				     (<PUT ,GROSSTBL
+					   2
+					   <BLETCHEROUS-CODE .TBL .RUVEC>>)>
+			      ""
+			      '["" ""]
+			      '<COND (<OR <EMPTY? .RANKING>
+					  <AND .L1? <L? <2 .FST> 0>>> [])
+				     (<AND .DEFAULT?
+					   <=? <1 .COMMAND> "as ">>
+				      ,RANKDEF)
+				     ('["SYM"])>>>
+	       <COND (<AND .L1? <==? <2 .FST> -1>> <RETURN <ACOPY .SP .RUVEC>>)
+		     (<AND .L1? <==? <2 .FST> -2>> <PRINT-RANK .RUVEC <2 .TBL>>)
+		     (.UNRANK?
+		      <MAPF <> <FUNCTION (X) <UN-RANK .RUVEC <2 .X>>> .RANKING>)
+		     (<OR <EMPTY? .RANKING>
+			  <NOT <1 .COMM>>
+			  <NOT <2 .COMM>>
+			  <NOT <3 .COMM>>>
+		      <PRINC " ?? ">)
+		     (T
+		      <SET NPOS
+			   <COND (<MEMBER <1 <2 .COMM>> '("before " "after ")>
+				  <2 <3 .COMM>>)
+				 (<PARSE <1 <3 .COMM>>>)>>
+		      <SET FN <2 <2 .COMM>>>
+		      <MAPF <>
+			    <FUNCTION (X "AUX" (IDX <2 .X>)) 
+				    <COND (<L? .IDX 1>)
+					  (T <APPLY .FN .RUVEC .NPOS <2 .X>>)>>
+			    .RANKING>)>)
+	      (<SETG VERBOSE .VERB>
+	       <SETG COMPLETES " ">
+	       <RETURN <ACOPY .SP .RUVEC>>)>>>
+    <PROG ()
+	  <SETG VERBOSE .VERB>
+	  <SETG COMPLETES " ">>>>
+
+<DEFINE BLETCHEROUS-CODE (TBL RUVEC)
+    #DECL ((TBL) SYMTABLE (RUVEC) <UVECTOR [REST FIX]>)
+    <MAPF ,VECTOR
+	  <FUNCTION (X) 
+		  #DECL ((X) FIX)
+		  <COND (<0? .X> <MAPRET>)
+			(<MAPRET <NTH <2 .TBL> <- <* 2 .X> 1>>
+				 .X>)>>
+	  .RUVEC>>
+
+
+<SETG RANKDEFSYM #SYMBOL ["1" 1]>
+
+<SETG RANKDEF ["SYM" "DEF" ,RANKDEFSYM]>
+
+<SETG RCOMDEF ["SYM" "DEF" <CHTYPE ["as " ,RANK-AS] SYMBOL>]>
+
+<SETG RCOMS
+      <MAKEBST "FROMB"
+	       ["after "
+		,RANK-AFTER
+		"as "
+		,RANK-AS
+		"before "
+		,RANK-BEFORE
+		"nowhere"
+		,ERROR]>>
+
+;"TABLES OF FUNCTIONS"
+
+<COND (<GASSIGNED? COMPILE>)
+      (T
+       <SETG MAKERS
+	     [,COMMAND
+	      ,MAKE.REGULAR
+	      ,MAKE.MATCH
+	      ,MAKE.MC
+	      ,MAKE.TF
+	      ,QUIT
+	      ,MAKE.REGULAR
+	      ,ERROR
+	      ,MAKE.RANK]>)>
+
+<SETG ASKERS
+      [,TIME
+       ,ASK.REGULAR
+       ,ASK.MATCH
+       ,ASK.MC
+       ,ASK.MC
+       ,TIME
+       ,ASK.SIMPLE
+       ,ERROR
+       ,ASK.RANK]>
+
+<SETG MREADERS [,PRINT.MAIL]>
+
+<SETG READERS
+      [,READ.COMM
+       ,READ.REGULAR
+       ,READ.MATCH
+       ,READ.MC
+       ,READ.MC
+       ,TIME
+       ,READ.SANS
+       ,ERROR
+       ,READ.RANK]>

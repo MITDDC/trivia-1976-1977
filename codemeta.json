@@ -1,0 +1,38 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "codeRepository": "https://github.com/MITDDC/trivia-1976-1977",
+    "dateCreated": "1977-07-01",
+    "name": "Trivia",
+    "description": "1976-1977 versions of Trivia, a user-contribution trivia game created by Tim Anderson, Marc Blank, and Dave Lebling as part of the MIT Lab for Computer Science's Dynamic Modeling Group.",
+    "applicationCategory": "Game",
+    "developmentStatus": "unsupported",
+    "isPartOf": "https://archivesspace.mit.edu/repositories/2/resources/1265",
+    "keywords": [
+        "Trivia",
+        "Computer Science"
+    ],
+    "programmingLanguage": [
+        "MDL"
+    ],
+    "operatingSystem": [
+        "ITS"
+    ],
+    "author": [
+        {
+            "@type": "Person",
+            "givenName": "Tim",
+            "familyName": "Anderson"
+        },
+        {
+            "@type": "Person",
+            "givenName": "Marc",
+            "familyName": "Blank"
+        },
+        {
+            "@type": "Person",
+            "givenName": "Dave",
+            "familyName": "Lebling"
+        }
+    ]
+}
