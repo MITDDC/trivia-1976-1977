@@ -1,0 +1,114 @@
+		TRIVIA Hacker's Manual
+ 		        -or-
+	      Learning to Frob Obscurely
+
+I. On the Road to the ASYLUM.
+
+    All high-quality TRIVIA maintainers must have a small but
+finite knowledge of the workings of ASYLUMs (refer to MARC;ASYLUM >).
+Asylums have the following obscure features:
+	Page 0 - MFD page / Octal Words to the Wise
+
+		 0. Unused
+		 1&2. Disk format date/time for lock hacking
+		 3. Unused
+		 4. Allocator Lock
+		 5. Unused/used horribly
+		 6. Highest legal address for data
+		 7&10. Unused
+		11. Pointer to free block chain
+		12. First of Directory Pointers
+		77. Last Directory Pointer
+	       100. First Page Lock (each locks 3 pages)
+	      1777. Last Page Lock
+
+	Page 1 - ALLOCATOR page / More gems of trivial knowledge
+
+		0. AOBJN pointer to Top of the Allocator (good for dinner, too)
+		1. Highest ID used + 1
+		2. SETZ n /or 0 -- where n is a pointer to start of free ID chain
+	   3-1777. Allocation table entries (length/start of block)
+
+    Directories are hidden at the top end of the file and grow towards the
+middle.  The data area starts at 4000 (octal) and also grows to the middle
+of the file.  When they meet, run for cover!
+
+    A directory is made up of 4 word blocks whose meanings are as follows:
+		1. Lock word (-1 ==> free  0 ==> locked)
+		2. Pointer to Block that data calls home.
+		3. Length of that block if positive
+		   -or-
+		   Pointer to next free ID on free ID chain (if 4.9 bit set)
+		4. Data word (for DATA-PRINTW, etc)
+
+    A data block is made up of a 5 word header followed by the data itself.
+The words of the header are:
+		1. Use word (+ number of people reading this block)
+		2. Unused
+		3. Chain pointer to next free data block if N==? 0
+		4. Unused
+		5. Length of block INCLUDING header
+
+    In addition to the data block header, insane MANIACS created in MADMAN
+spaces use an additional 6 words of header but their meaning in obscure and
+their value is left for philosophers to decide.  No person in his right mind
+attempts to grok this.
+
+    The following magic incantations may be useful to a fifth-level magic user.
+	1. <DATA-FIND <asylum> <id number>>
+	   returns the directory block for that ID
+
+	2. <DATA-OPEN <mode>      ; "PRINT" "READ" or "PRINTW"
+		      <id number> ; -1 for a brand new ID if in PRINT mode
+		      <asylum>>
+	   returns a MANIAC or FALSE
+
+	3. <DATA-BLOCK <maniac>
+		       <asylum>
+		       <length of block>>
+	   returns the location of the allocated block or FALSE
+
+	4. <DATA-CLOSE <maniac> <asylum>>
+	   returns the MANIAC
+
+	5. <DATA-APRINT <asylum> <id number> <space> <object>>
+	   returns the MANIAC created
+
+	6. <DATA-IPRINT <maniac> <asylum> <space> <object>>
+	   is like DATA-APRINT with a DATA-OPEN done previously
+
+	7. <DATA-AREAD <asylum> <id number> <space>>
+	   returns the object.
+
+	8. <DATA-IREAD <maniac> <asylum> <space>>
+	   is the analog of DATA-IREAD.
+
+	9. <DATA-PRINTW <id number> <asylum> <primtype word>>
+	   returns the MANIAC
+	   
+       10. <DATA-READW <id number> <asylum>>
+	   returns a <primtype word>
+
+       11. <DIR-FIND <asylum> <id number>>
+	   returns the page number in core of the directory on which <id number>
+	   lives.  It obviously maps the page in, if it wasn't already.
+
+       12. <OPEN-DATA-FILE <file name>>
+	   opens an ASYLUM.  There are some optional arguments which are not
+	   really necessary to grok.
+
+       13. <DATA-PUT <asylum> <id number> <uvector [dir header]>>
+	   BE CAREFUL!
+
+       14. <DATA-DELETE <id number> <asylum>>
+	   deletes this item
+
+       15. <DATA-BLOCK-FREE <asylum> <location of start of block>>
+	   deallocates that block
+
+       16. <NAME-BLOCK-FREE <id number> <asylum>>
+	   deallocates the name area for <id number>
+
+       17. <DATA-RENAME <id number> <asylum> <id number>>
+	   the obvious.  May not be debugged totally.
+
