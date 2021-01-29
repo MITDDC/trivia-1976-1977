@@ -10,7 +10,7 @@ The ```sys```, ```taa```, ```marc```, ```madman```, ```mudtmp```, and ```mudsav`
 
 The ```}msgs}``` directories contain files where messages were posted to users, ```trivia.curfew``` files were messages to trivia users. The [```trivia.curfew```](../main/trivia/9005201/}msgs}/trivia.curfew) file in the ```9005201``` directory states that Trivia became unavailable by October 1977.
 
-The [```art2.tv```](../main/trivia/9005143/taa/ar2.tv), [```art2.tv```](../main/trivia/9005183/taa/ar2.tv) [```art1.tv```](../main/trivia/9006234/madman/ar1.tv) files are ITS archive files. Researcher Lars Brinkhoff extracted their contents to directories of the same name using the [itsarc program](https://github.com/larsbrinkhoff/pdp10-its-disassembler/blob/master/itsarc.c). They were added to their corresponding tape directory along with a txt file showing the original file timestamps.
+The [```art2.tv```](../main/trivia/9005143/taa/ar2.tv), [```art2.tv```](../main/trivia/9005183/taa/ar2.tv), and [```art1.tv```](../main/trivia/9006234/marc/ar1.tv) files are ITS archive files. Researcher Lars Brinkhoff extracted their contents to directories of the same name using the [itsarc program](https://github.com/larsbrinkhoff/pdp10-its-disassembler/blob/master/itsarc.c). They were added to their corresponding tape directory along with a txt file showing the original file timestamps.
 
 ### [codemeta.json](../main/codemeta.json)
 This file is metadata about the Trivia files, using the [CodeMeta Project](https://codemeta.github.io/) schema.
