@@ -13,7 +13,27 @@ trivia
 │   └── [Jan 28 16:53]  mudsav
 │       ├── [Dec  9  1977]  fixup.file
 │       └── [Dec  9  1977]  sav.file
-├── [Jan 25 12:06]  9005143
+├── [Jan 29 16:19]  9005143
+│   ├── [Jan 29 16:19]  ar2.tv
+│   │   ├── [Jan 29 16:19]  check.4
+│   │   ├── [Jan 29 16:19]  check.nbin
+│   │   ├── [Jan 29 16:19]  gc.8
+│   │   ├── [Jan 29 16:19]  gc.nbin
+│   │   ├── [Jan 29 16:19]  holida.11
+│   │   ├── [Jan 29 16:19]  mar._ddt_
+│   │   ├── [Jan 29 16:19]  recrea.11
+│   │   ├── [Jan 29 16:19]  recrea.gbin
+│   │   ├── [Jan 29 16:19]  recrea.nbin
+│   │   ├── [Jan 29 16:19]  ssname.1
+│   │   ├── [Jan 29 16:19]  ssname.nbin
+│   │   ├── [Jan 29 16:19]  trivia.9
+│   │   ├── [Jan 29 16:19]  trv.glue
+│   │   ├── [Jan 29 16:19]  trv.maker
+│   │   ├── [Jan 29 16:19]  tvbug.165
+│   │   ├── [Jan 29 16:19]  unused.6
+│   │   ├── [Jan 29 16:19]  unused.nbin
+│   │   └── [Jan 29 16:19]  zork.3
+│   ├── [Jan 29 16:19]  ar2.txt
 │   ├── [Jan 25 12:06]  madman
 │   │   ├── [Jun 27  1977]  trv.savfil
 │   │   └── [Jun 24  1977]  tv.file
@@ -26,7 +46,26 @@ trivia
 │   │   └── [Jul  1  1977]  trivia.curfew
 │   └── [Jan 25 12:06]  taa
 │       └── [Jun 30  1977]  ar2.tv
-├── [Jan 28 15:39]  9005183
+├── [Jan 29 16:19]  9005183
+│   ├── [Jan 29 16:19]  ar2.tv
+│   │   ├── [Jan 29 16:19]  check.4
+│   │   ├── [Jan 29 16:19]  check.nbin
+│   │   ├── [Jan 29 16:19]  gc.7
+│   │   ├── [Jan 29 16:19]  gc.nbin
+│   │   ├── [Jan 29 16:19]  holida.11
+│   │   ├── [Jan 29 16:19]  mar._ddt_
+│   │   ├── [Jan 29 16:19]  recrea.11
+│   │   ├── [Jan 29 16:19]  recrea.gbin
+│   │   ├── [Jan 29 16:19]  recrea.nbin
+│   │   ├── [Jan 29 16:19]  ssname.1
+│   │   ├── [Jan 29 16:19]  ssname.nbin
+│   │   ├── [Jan 29 16:19]  trivia.9
+│   │   ├── [Jan 29 16:19]  trv.glue
+│   │   ├── [Jan 29 16:19]  trv.maker
+│   │   ├── [Jan 29 16:19]  tvbug.165
+│   │   ├── [Jan 29 16:19]  unused.6
+│   │   └── [Jan 29 16:19]  unused.nbin
+│   ├── [Jan 29 16:19]  ar2.txt
 │   ├── [Jan 28 15:38]  mudtmp
 │   │   └── [Jun 13  1977]  pmap.sav
 │   └── [Jan 25 12:06]  taa
@@ -34,7 +73,25 @@ trivia
 ├── [Jan 25 12:06]  9005201
 │   └── [Jan 25 12:06]  }msgs}
 │       └── [Oct  2  1977]  trivia.curfew
-└── [Jan 25 12:06]  9006234
+└── [Jan 29 16:19]  9006234
+    ├── [Jan 29 16:19]  ar1.tv
+    │   ├── [Jan 29 16:19]  datdel.3
+    │   ├── [Jan 29 16:19]  datdel.nbin
+    │   ├── [Jan 29 16:19]  lister.13
+    │   ├── [Jan 29 16:19]  obitua.4
+    │   ├── [Jan 29 16:19]  tmaint.12
+    │   ├── [Jan 29 16:19]  trivia.210
+    │   ├── [Jan 29 16:19]  ts.trivia
+    │   ├── [Jan 29 16:19]  ts.tvbigl
+    │   ├── [Jan 29 16:19]  ts.tvdown
+    │   ├── [Jan 29 16:19]  tvbigl.1
+    │   ├── [Jan 29 16:19]  tvcopy.5
+    │   ├── [Jan 29 16:19]  tvdown.2
+    │   ├── [Jan 29 16:19]  tvinit.6
+    │   ├── [Jan 29 16:19]  tvload.3
+    │   ├── [Jan 29 16:19]  tvman.5
+    │   └── [Jan 29 16:19]  tvwarn.1
+    ├── [Jan 29 16:19]  ar1.txt
     ├── [Jan 28 15:39]  madman
     │   ├── [Oct 12  1976]  trv.savfil
     │   ├── [Oct 10  1976]  tvdoc.14
@@ -56,4 +113,4 @@ trivia
         ├── [Oct 12  1976]  tvhack.gbin
         └── [Oct 12  1976]  tv.save
 
-20 directories, 36 files
+23 directories, 90 files
