@@ -1,0 +1,142 @@
+T ; "IF TRIVIA IS AROUND"
+
+<USE "CALSYM">
+
+<OR <GASSIGNED? $TLOSE>
+    <PROG ()
+	<NEWTYPE ASYLUM VECTOR>
+	<NEWTYPE SPACE VECTOR>
+	<SETG $SBABBLE 2>
+	<SETG SCORE 3>
+	<MANIFEST SCORE $SBABBLE>
+	<SETG CATS <MAKESST "FOO" []>>>>
+
+<DEFINE MOBY-VEC ("AUX" (TVA ,TVASS) (TVS ,TVSPACE)
+			LST UV SCORE QUESTIONS)
+	#DECL ((LST) LIST (UV) <UVECTOR [REST FLOAT]> (TVA) ASYLUM (TVS) SPACE
+	       (SCORE) <UVECTOR [15 <UVECTOR [2 FLOAT]>]>
+	       (QUESTIONS) <VECTOR [15 <LIST [REST FIX]>]>)
+	<SET LST <DATA-READ-CAREFUL .TVA
+				    ,LUSERS
+				    <ARESET ,TVSPACE1>
+				    "can't read losstable"
+				    MOBY-VEC>>
+	<SET UV <AIUVECTOR <COND (<GASSIGNED? MOBYSPACE>
+				  <ARESET ,MOBYSPACE>)
+				 (<SETG MOBYSPACE <AFIND 3>>)>
+			   <* </ <LENGTH .LST> 4> 66>
+			   0.000>>
+	<REPEAT ((L .LST) (U .UV) CNT1 CNT2 QCT)
+		#DECL ((L) LIST (U) UVECTOR (CNT1 CNT2) FLOAT (QCT) FIX)
+		<AND <TYPE? <1 .L> FIX> <RETURN>>
+		<PUT .UV 1 <CHTYPE <STRTOX <1 .L>> FLOAT>>
+		<SET UV <REST .UV 1>>
+		<SET SCORE <DATA-READ-CAREFUL .TVA
+					      <+ <3 .L> ,SCORE>
+					      <ARESET .TVS>
+					      "can't read player score"
+					      MOBY-VEC>>
+		<SET QUESTIONS
+		     <DATA-READ-CAREFUL .TVA
+					<+ <3 .L> ,QASKED>
+					<ARESET ,TVSPACE2>
+					"can't read player questions"
+					MOBY-VEC>>
+		<SET CNT1 0.000>
+		<SET CNT2 0.000>
+		<SET QCT 0>
+		<MAPF <>
+		      <FUNCTION (SUV QLIST "AUX" (SUV1 <1 .SUV>) (SUV2 <2 .SUV>)
+				 (QNUM </ <LENGTH .QLIST> 2>)) 
+			      #DECL ((SUV) <UVECTOR [2 FLOAT]> (QLIST) LIST
+				     (SUV1 SUV2) FLOAT (QNUM) FIX)
+			      <PUT .UV 1 .SUV1>
+			      <SET CNT1 <+ .CNT1 .SUV1>>
+			      <PUT .UV 2 .SUV2>
+			      <SET CNT2 <+ .CNT2 .SUV2>>
+			      <PUT .UV 3 </ .SUV1 .SUV2>>
+			      <PUT .UV 4 <CHTYPE .QNUM FLOAT>>
+			      <SET QCT <+ .QCT .QNUM>>
+			      <SET UV <REST .UV 4>>>
+		      .SCORE
+		      .QUESTIONS>
+		<PUT .UV 1 .CNT1>
+		<PUT .UV 2 .CNT2>
+	        <PUT .UV 3 </ .CNT1 .CNT2>>
+		<PUT .UV 4 <CHTYPE .QCT FLOAT>>
+		<SET UV <REST .UV 5>>
+		<SET L <REST .L 4>>>
+	<SETG MOBY <TOP .UV>>>
+
+<DEFINE DATA-READ-CAREFUL (A ID SPACE ERR "TUPLE" ERRS)
+	#DECL ((A) ASYLUM (ID) <PRIMTYPE WORD> (SPACE) SPACE
+	       (ERR) STRING)
+	<PROG (TMP (CT 0))
+	      <COND (<SET TMP <DATA-AREAD .A .ID .SPACE>>)
+		    (<OR
+		      <NOT <MEMQ <1 .TMP> '![5 7 8]>>
+		      <G? <SET CT <+ .CT 1>> 10>>
+		     <PERR .ERR .TMP !.ERRS>
+		     <SET CT 0>)
+		    (T
+		     <SLEEP 1>
+		     <AGAIN>)>>>
+
+<DEFINE BABBLE-SORT ("AUX" (UV <COND (<AND <SET-STATUS ,$SBABBLE> <>>)
+				     (<GASSIGNED? MOBY> ,MOBY)
+				     (<ARESET ,MOBYSPACE> <MOBY-VEC>)>) HOW)
+	#DECL ((HOW) <OR FALSE <VECTOR [2 ANY]>> (UV) UVECTOR)
+	<COND (<SET HOW 
+	       	   <READARGS ,ONSYMS
+			     "On"
+			     '["" ""]
+			     '["SYM"]
+			     ,BYSYMS
+			     "by"
+			     '["" ""]
+			     '["SYM"]>>
+		<COND (<AND <1 .HOW> <2 .HOW>>
+		       <SORT <>
+			     .UV 
+			     66
+			     <COND (<0? <2 <1 .HOW>>> 0)
+				   (<+ 1 
+				       <* 4 <- <2 <1 .HOW>> 1>>
+				       <2 <2 .HOW>>>)>>
+		       <BABBLE .UV .HOW>)>)>>
+
+<DEFINE BABBLE (UV HOW "AUX" OFFSET) 
+	#DECL ((UV) UVECTOR (HOW) <VECTOR [2 <<PRIMTYPE VECTOR> ANY FIX>]> (OFFSET) FIX)
+	<COND (<0? <2 <1 .HOW>>>
+	       <PUT <1 .HOW> 2 16>)>
+	<SET OFFSET <+ 2 <* 4 <- <2 <1 .HOW>> 1>>>>
+	<CRLF>
+	<INDENT-TO 22>
+	<PRINC <1 <1 .HOW>>>
+	<PRINC "
+	    Points    Maximum    Percentage    Questions
+">
+	<SET UV <REST .UV <LENGTH .UV>>>
+	<REPEAT ((CT 0))  #DECL ((CT) FIX)
+		<COND (<==? .UV <TOP .UV>> <RETURN>)
+		      (<SET UV <BACK .UV 66>>
+		       <PRINC <SIXTOS <1 .UV>>>
+		       <INDENT-TO 12>
+		       <PRIN1 <NTH .UV .OFFSET>>
+		       <INDENT-TO 22>
+		       <PRIN1 <NTH .UV <+ .OFFSET 1>>>
+		       <INDENT-TO 33>
+		       <PRIN1 <NTH .UV <+ .OFFSET 2>>>
+		       <INDENT-TO 47>
+		       <PRIN1 <CHTYPE <NTH .UV <+ .OFFSET 3>> FIX>>
+		       <CRLF>
+		       <COND (<0? <MOD <SET CT <+ .CT 1>> 5>>
+			      <CRLF>)>)>>>
+
+<SETG SPECS <MAKEBST "FVROB" '["Name" 0 "Total" 16]>>
+
+<SETG ONSYMS <MAKEMST "FROB" [,CATS ,SPECS]>>
+
+<SETG BYSYMS
+      <MAKEBST "FROB" '["Maximum" 1 "Percentage" 2 "Questions" 3 "Total" 0]>>
+
