@@ -1,0 +1,255 @@
+Title TRIVIA Start Up Checker
+
+.mllit==1
+
+o=0
+a=1
+b=2
+c=3
+hhmmss=11
+yymmdd=12
+tim=13
+now=14
+err=15
+unm=16
+p=17
+
+dskchn==1
+ttychn==2
+mudchn==1
+savchn==2
+
+   ; file containing total death message
+
+%ddev:	sixbit	/dsk/
+%dfn1:	sixbit	/trivia/
+%dfn2:	sixbit	/death/
+%dsnm:	sixbit	/_msgs_/
+
+   ; file indicating curfew
+
+%cdev:	sixbit	/dsk/
+%cfn1:	sixbit	/trivia/
+%cfn2:	sixbit	/curfew/
+%csnm:	sixbit	/_msgs_/
+
+   ; file indicating holiday
+
+%hdev:	sixbit	/dsk/
+%hfn1:	sixbit	/holidy/
+%hsnm:	sixbit	/combat/
+
+   ; file of last obnoxious request
+
+%rdev:	sixbit	/dsk/
+%rfn1:	sixbit	/badboy/
+%rsnm:	sixbit	/vanish/
+
+   ; save file
+
+%sdev:	sixbit	/dsk/
+%sfn1:	sixbit	/trv/
+%sfn2:	sixbit	/savfil/
+%ssnm:	sixbit	/madman/
+
+   ; macro to open channels
+
+define	open	dev,fn1,fn2,snm,erc=4,nxt=.+2,mod=6,chn=dskchn
+	.call	[setz ? sixbit/open/ ? [mod,,chn] ? dev ? fn1 ? fn2 ? snm ? setzb err]
+	ifn	erc,[
+	jrst	[caie	err,erc ? jrst gross ? jrst nxt]
+	]
+	ife	erc,[
+	jrst gross
+	]
+	termin
+
+   ; macros to expire gracefully
+
+define	fatal
+	jrst	gross
+	termin
+
+define	die	-messag
+	.value	[asciz /:messag
+:kill
+/]
+	termin
+
+   ; really starts here
+
+start:	movei	p,[-20,,pdl-1]		; define peter dave lebling
+	open	[[sixbit/tty/]]0,0,0,0,,3,ttychn
+	open	%ddev,%dfn1,%dfn2,%dsnm,4,check1
+	pushj	p,prinf
+	.break	16,40000
+
+check1:	.rdatim	hhmmss,			; time
+	.suset	[.rxunam,,unm]		; xuname
+	ldb	a,[63600,,unm]		; first 5 character
+	came	a,[sixbit / cheat/]
+	camn	a,[sixbit / guest/]	; cretin
+	jrst	whoru
+	camn	a,[sixbit / luser/]
+	jrst	whoru
+	open	[[sixbit/dsk/]][[sixbit/.file./]][[sixbit/(dir)/]]unm,20,.+2,
+	jrst	ok
+
+	open	%cdev,%cfn1,%cfn2,%csnm
+	jrst	curfew
+
+	.ryear	a,
+	ldb	a,[320300,,a]		; day of the week
+	jumpe	a,ok			; sunday and sunday
+	cain	a,6			; are ok
+	jrst	ok
+	open	%hdev,%hfn1,yymmdd,%hsnm
+	jrst	ok			; ok if holiday
+
+	ldb	a,[301400,,hhmmss]
+	caige	a,'22			; ok if later than 11 pm
+	caige	a,'09	 		; or before 8 am
+	jrst	ok
+
+	push	p,[avhere]		; save dying code
+	skipa
+
+curfew:	push	p,[busy]
+	open	%rdev,%rfn1,unm,%rsnm,
+	jrst	compar
+
+newbad:	open	%rdev,%rfn1,unm,%rsnm,0,,7
+	jrst	@(p)
+
+compar:	.call	[setz ? sixbit /rfdate/ ? 1000,,dskchn ? setzm tim]
+	fatal
+	pushj	p,haknow
+	.call	[setz ? sixbit /sfdate/ ? 1000,,dskchn ? setz now]
+	fatal
+
+	tlz	tim,600000
+	hlrz	a,tim
+	hlrz	b,now
+	came	a,b
+	jrst	@(p)
+	sub	now,tim
+	caige	now,20.*60.*2.
+	
+rude:	.value	[asciz /:You don't believe me eh? That makes me MAD!!!
+:kill :logout
+/]
+	jrst	@(p)
+
+whoru:	die	Please don't play as that, Try :CHUNAME to someone.
+avhere:	die	Sorry, But You Can't Play during Office Hours (8am-11pm).
+busy:	die	The System is VERY loaded, Please Try Again in 20 minutes.
+gross:	die	Gross Bug, Please Notify the Maintainer.
+
+   ; here if everything is all right
+
+ok:	hrri	o,[asciz /
+This is NEW TRIVIA. 
+Only use this TRIVIA if you plan on playing over a long period of time.
+Documentation in MADMAN;TVDOC >
+/]
+	pushj	p,princ
+
+okok:	open	%sdev,%sfn1,%sfn2,%ssnm,0,,6,savchn
+	movsi	b,sixbit /   mud/
+	.iot	2,[-1,,o]
+	.acces	2,[0]
+	ldb	a,[350700,,o]
+	subi	a,40
+	dpb	a,[140600,,b]
+	ldb	a,[260700,,o]
+	subi	a,40
+	dpb	a,[060600,,b]
+	ldb	a,[170700,,o]
+	subi	a,40
+	dpb	a,[000600,,b]
+
+	open	[[sixbit/dsk/]][[sixbit/ts/]]b,[[sixbit/sys1/]]0,,4,mudchn
+	movsi	p,stuff			; the following is classic
+	blt	p,p
+	jrst	a
+
+stuff:	2
+	.call load
+	.value
+	.iot 1,	a
+	.close	mudchn,
+	addi	a,1
+	jrst	@a
+
+load:	setz
+	sixbit /load/
+	1000,,-1
+	setzi	1
+
+pdl:	block 20
+	
+   ; routine to get into now the current time in
+   ; file creation date format
+
+haknow:	move	o,[440600,,hhmmss]
+	pushj	p,getnum
+	imuli	a,60.*60.*2
+	push	p,a
+	pushj	p,getnum
+	imuli	a,60.*2
+	addm	a,(p)
+	pushj	p,getnum
+	imuli	a,2
+	addm	a,(p)
+	pop	p,now
+	pushj	p,getnum
+	dpb	a,[330700,,now]
+	pushj	p,getnum
+	dpb	a,[270400,,now]
+	pushj	p,getnum
+	dpb	a,[220500,,now]
+	popj	p,
+
+   ; routine to get a number from byter point o
+
+getnum:	ildb	a,o
+	subi	a,'0
+	imuli	a,10.
+	ildb	b,o
+	subi	b,'0
+	add	a,b
+	popj	p,
+
+   ; routine to copy a file from dskchn to ttychn
+
+prinf:	move	a,[-buflen,,buf]
+	.iot	dskchn,a
+	hrr	b,a
+	hrli	b,-buflen
+	sub	b,a
+	jumpge	b,[popj	p,]
+	hrri	b,buf
+	.iot	ttychn,b
+	jumpl	a,[popj p,]
+	move	a,[<3_1>+<3_8.>+<3_15.>+<3_22.>+<3_29.>]
+	movem	a,buf
+	move	a,[buf,,buf+1]
+	blt	a,buf+buflen-1
+	jrst	prinf
+
+buflen==200
+buf:	block	buflen
+
+   ; Routine to print a string till ^@
+
+princ:	hrli	o,440700
+	move	a,[<3_1>+<3_8.>+<3_15.>+<3_22.>+<3_29.>]
+	ildb	b,o
+	jumpe	b,[popj	p,]
+	dpb	b,[350700,,a]
+	move	b,[-1,,a]
+	.iot	ttychn,b
+	jrst	princ+1
+
+	end	start
+

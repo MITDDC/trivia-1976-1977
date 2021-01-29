@@ -1,0 +1,326 @@
+<DEFINE SFIND (GZORK "OPTIONAL" (D ,TVASS)) #DECL ((GZORK) FIX (D) ASYLUM)
+  <PRINC "
+Id     Address	   Length    Data">
+  <REPEAT ((CT 0)(UV1 ,DUV1)(FROB <+ <* <MFDPAGE ,TVASS> 1024> ,DIRPTRS>))
+    #DECL ((CT FROB) FIX (UV1) <UVECTOR <PRIMTYPE WORD>>)
+    <COND (<0? <CHTYPE <1 <GET-LOC .FROB .UV1>> FIX>>
+	   <RETURN>)
+	  (T
+	   <FINDIT .CT .D .GZORK>
+	   <SET CT <+ .CT 1>>
+	   <SET FROB <+ .FROB 1>>)>>>
+
+<DEFINE FINDIT (DIRNUM D "OPTIONAL" (TARGET 0)
+	       "AUX" LOC HI (DUV ,DATUV) (UV1 ,DUV1) DPAGE TEMP)
+   #DECL ((DIRNUM TARGET TEMP) FIX (D) ASYLUM (LOC HI) FIX (DPAGE) <OR FALSE FIX>
+	  (UV1) <UVECTOR [1 WORD]> (DUV) <UVECTOR [4 WORD]>)
+   <COND
+    (<SET DPAGE <DIR-FIND .D <* .DIRNUM ,DIRSIZE>>>
+     <SET HI <CHTYPE <1 <GET-LOC <+ ,HIGHID <* <MFDPAGE .D> 1024>> .UV1>> FIX>>
+     <SET LOC <+ <* .DPAGE 1024> ,OBJSTART>>
+     <REPEAT ((NAME <* .DIRNUM ,DIRSIZE>) (FOO ,DIRSIZE) BAR)
+	     #DECL ((NAME FOO BAR) FIX)
+	     <COND
+	      (<OR <1? .FOO> <G? .NAME .HI>> <PRINC .DIRNUM> <RETURN>)
+	      (T
+	       <SET BAR <CHTYPE <NTH <GET-LOC .LOC ,NAMUV> <+ ,NAMDATA 1>> FIX>>
+	       <COND (<==? .TARGET <CHTYPE <NTH ,NAMUV <+ ,NAMMISC 1>> FIX>>
+		      <CRLF> 
+		      <PRIN1 .NAME>
+		      <INDENT-TO 7> 
+		      <AND <==? <NTH ,NAMUV 1> #WORD *0*> <PRINC "*">>
+		      <PRIN1 .BAR>
+		      <INDENT-TO 19>
+		      <PRIN1 <CHTYPE <NTH ,NAMUV <+ ,NAMCHNCDR 1>> FIX>>
+		      <INDENT-TO 29>
+		      <PRIN1 <COND (<OR <0? .TARGET>
+					<N==?
+					 <SET TEMP
+					      <CHTYPE <NTH ,NAMUV <+ ,NAMMISC 1>> FIX>>
+					 .TARGET>> .TEMP)
+				   ("**WINNER**")>>)>
+	       <SET NAME <+ .NAME 1>>
+	       <SET FOO <- .FOO 1>>
+	       <SET LOC <+ .LOC ,NAMBLKLEN>>)>>)>>
+<DEFINE LISTF (DIRNUM D "AUX" LOC HI (DUV ,DATUV) (UV1 ,DUV1) DPAGE)
+   #DECL ((DIRNUM) FIX (D) ASYLUM (LOC HI) FIX (DPAGE) <OR FALSE FIX>
+	  (UV1) <UVECTOR [1 WORD]> (DUV) <UVECTOR [4 WORD]>)
+   <COND
+    (<SET DPAGE <DIR-FIND .D <* .DIRNUM ,DIRSIZE>>>
+     <SET HI <CHTYPE <1 <GET-LOC <+ ,HIGHID <* <MFDPAGE .D> 1024>> .UV1>> FIX>>
+     <SET LOC <+ <* .DPAGE 1024> ,OBJSTART>>
+     <PRINC "
+Id     Address     Length    Data">
+     <REPEAT ((NAME <* .DIRNUM ,DIRSIZE>) (FOO ,DIRSIZE) BAR)
+	     #DECL ((NAME FOO BAR) FIX)
+	     <COND
+	      (<OR <1? .FOO> <G? .NAME .HI>> <RETURN <CRLF>>)
+	      (T
+	       <COND (<AND <0? <SET BAR
+			           <CHTYPE <NTH <GET-LOC .LOC ,NAMUV>
+					        <+ ,NAMDATA 1>>
+				           FIX>>>
+			   <==? <NTH ,NAMUV <+ ,NAMMISC 1>> #WORD *0*>>
+		      <COND (<0? <SET BAR 
+				      <CHTYPE <NTH ,NAMUV <+ ,NAMCHNCDR 1>> FIX>>>)
+			    (<CRLF>
+			     <PRINC !"[>
+			     <PRIN1 .NAME>
+			     <PRINC !"]>)>)
+		     (<CRLF> 
+		      <PRIN1 .NAME>
+		      <INDENT-TO 7> 
+		      <AND <==? <NTH ,NAMUV 1> #WORD *0*> <PRINC "*">>
+		      <PRIN1 .BAR>
+		      <INDENT-TO 19>
+		      <PRIN1 <CHTYPE <NTH ,NAMUV <+ ,NAMCHNCDR 1>> FIX>>
+		      <INDENT-TO 29>
+		      <PRIN1 <CHTYPE <NTH ,NAMUV <+ ,NAMMISC 1>> FIX>>)>
+	       <SET NAME <+ .NAME 1>>
+	       <SET FOO <- .FOO 1>>
+	       <SET LOC <+ .LOC ,NAMBLKLEN>>)>>)>>
+
+<DEFINE LISTA (D
+	       "AUX" (MFD <* <MFDPAGE .D> 1024>) (ALLOC <* <ALLOCPAGE .D> 1024>)
+		     HIGH LO CNT ALOC)
+	#DECL ((D) ASYLUM (MFD ALLOC CNT ALOC) FIX)
+	<ALLOC-MAP .D>
+	<PRINC "
+Database Allocator Statistics">
+	<SET ALPTR <1 <GET-LOC .ALLOC ,DUV1>>>
+	<SET CNT
+	     <CHTYPE <ORB <GETBITS .ALPTR <BITS 18 18>> #WORD *777777000000*>
+		     FIX>>
+	<CRLF>
+	<SET ALOC
+	     <+ <CHTYPE <ANDB <GETBITS .ALPTR <BITS 18 0>> #WORD *000000001777*>
+			FIX>
+		.ALLOC>>
+	<CRLF>
+	<PRINC "From     To     Length">
+	<REPEAT ((UV ,AUV2))
+		<GET-LOC .ALOC .UV>
+		<CRLF>
+		<PRIN1 <SET LO <CHTYPE <2 .UV> FIX>>>
+		<PRINC "	 ">
+		<PRIN1 <SET HIGH <+ .LO <CHTYPE <1 .UV> FIX>>>>
+		<PRINC "	">
+		<PRIN1 <- .HIGH .LO>>
+		<SET ALOC <+ .ALOC 2>>
+		<SET CNT <+ .CNT 2>>
+		<AND <0? .CNT> <RETURN <CRLF>>>>>
+
+<DEFINE LISTM (D
+	       "AUX" (MFD <* <MFDPAGE .D> 1024>) (ALLOC <* <ALLOCPAGE .D> 1024>)
+		     HIGH LO CNT ALOC (DUV ,DUV1) A)
+	#DECL ((D) ASYLUM (MFD ALLOC CNT ALOC) FIX (DUV) <UVECTOR [1 WORD]>
+	       (A) <PRIMTYPE WORD>)
+	<SET A <1 <GET-LOC <+ .MFD ,DPGLOCK> .DUV>>>
+	<PRINC "
+MFD Lock -- ">
+	<COND (<==? .A #WORD *000000000000*> <PRINC "LOCKED">)
+	      (<PRINC "UNLOCKED">)>
+	<PRINC "
+UP time -- ">
+	<PDSKDATE <1 <GET-LOC <+ .MFD ,DINITRQ> .DUV>>>
+	<PRINC "
+ALTER time -- ">
+	<PDSKDATE <1 <GET-LOC <+ .MFD ,DINITDN> .DUV>>>
+	<SET CNT
+	     <CHTYPE <ORB <GETBITS <1 <GET-LOC .ALLOC .DUV>>
+				   <BITS 18 18>>
+			  #WORD *777777000000*>
+		     FIX>>
+	<PRINC "
+ALLOCATOR Use -- ">
+	<PRIN1 <SET ALOC </ <- .CNT> 2>>>
+	<PRINC " entries [">
+	<PRIN1 </ <* .ALOC 100> 511>>
+	<PRINC "%]">
+	<PRINC "
+ALLOCATOR Lock -- ">
+	<COND (<==? <1 <GET-LOC <+ .MFD ,ALLOCLOCK> .DUV>>
+		    #WORD *000000000000*>
+	       <PRINC "LOCKED">)
+	      (<PRINC "UNLOCKED">)>
+	<PRINC "
+High Address -- ">
+	<PRIN1 <SET A <CHTYPE <1 <GET-LOC <+ .MFD ,HIGHADR> .DUV>> FIX>>>
+	<PRINC " [Page ">
+	<PRIN1 </ .A 1024>>
+	<PRINC "]">
+	<PRINC "
+Maximum Address -- ">
+	<PRIN1 <SET A <CHTYPE <1 <GET-LOC <+ .MFD ,MAXADR> .DUV>> FIX>>>
+	<PRINC " [Page ">
+	<PRIN1 </ .A 1024>>
+	<PRINC "]">
+	<PRINC "
+High ID -- ">
+	<PRIN1 <CHTYPE <1 <GET-LOC <+ .ALLOC ,HIGHID> .DUV>> FIX>>
+	<REPEAT ((N ,DIRPTRS) (DIR 0))
+		#DECL ((N DIR) FIX)
+		<COND (<0? <SET A <CHTYPE <1 <GET-LOC <+ .MFD .N> .DUV>> FIX>>>
+		       <RETURN>)
+		      (<CRLF>
+		       <PRINC "Directory ">
+		       <PRIN1 .DIR>
+		       <PRINC " at ">
+		       <PRIN1 .A>
+		       <PRINC " [Page ">
+		       <PRIN1 </ .A 1024>>
+		       <PRINC "]">
+		       <SET N <+ .N 1>>
+		       <SET DIR <+ .DIR 1>>)>>
+	<REPEAT ((N ,PGLOCKS))
+		<COND (<==? .N 1024> <RETURN>)
+		      (T
+		       <COND (<==? <1 <GET-LOC <+ .MFD .N> .DUV>>
+				   #WORD *000000000000*>
+			      <PRINC "
+Pages Locked from ">
+			      <PRIN1 <SET A </ <- .N ,PGLOCKS> .P/L>>>
+			      <PRINC " to ">
+			      <PRIN1 <+ .A ,P/L>>)>
+		       <SET N <+ .N 1>>)>>
+	,NULL>
+
+<DEFINE LISTB (DC "OPTIONAL" (VERB <>) (SALV <>)
+		   "AUX" (MFD <* <MFDPAGE .DC> 1024>) (UV1 ,DUV1) (DUV ,NAMUV)
+			 (ALLOCK <+ .MFD ,ALLOCLOCK>) DF HI FROB (LOST 0) MOBY)
+   #DECL ((DC) ASYLUM (MFD ALLOCK) FIX (UV1) <UVECTOR [1 WORD]> (HI) WORD
+	  (LOST) FIX (DUV) <UVECTOR [4 WORD]> (DF) <OR FALSE FIX>
+	  (MOBY) <UVECTOR [REST WORD]> (VERB SALV) <OR 'T FALSE>)
+   <ALLOC-MAP .DC>
+   <SET HI <1 <GET-LOC <+ ,HIGHID <* <ALLOCPAGE .DC> 1024>> .UV1>>>
+   <SET ALPTR
+	<+ <* 1024 <ALLOCPAGE .DC>>
+	   <CHTYPE <ANDB <1 <GET-LOC <* <ALLOCPAGE .DC> 1024> .UV1>>
+			 #WORD *000000001777*>
+		   FIX>>>
+   <SET MOBY
+	<IUVECTOR <+ 4
+		     <* <CHTYPE .HI FIX> 2>
+		     <SET ALLEN <- <+ 1023 <* <ALLOCPAGE .DC> 1024>> .ALPTR>>>
+		  #WORD *000000000000*>>
+   <GET-LOC-X .ALPTR <REST .MOBY 2> .ALLEN>
+   <PUT .MOBY 1 #WORD *777777003777*>
+   <PUT .MOBY 2 #WORD *000000000001*>
+   <SET MOBY <REST .MOBY <+ 2 .ALLEN>>>
+   <REPEAT ((DIR <+ .MFD ,DIRPTRS>) (DIRNUM 0) (ID 0))
+     #DECL ((DIR DIRNUM ID) FIX)
+     <COND
+      (<OR <0? <CHTYPE .DIR FIX>>
+	   <NOT <SET DF <DIR-FIND .DC <* .DIRNUM ,DIRSIZE>>>>>
+       <RETURN>)
+      (<SET DPG <+ ,OBJSTART <* 1024 .DF>>>
+       <REPEAT ((NUM ,DIRSIZE) (WHR 0) WD)
+	       <COND (<OR <EMPTY? .MOBY> <0? .NUM>> <RETURN>)
+		     (<GET-LOC .DPG .DUV>
+		      <AND <==? <NTH .DUV <+ ,NAMDATA 1>> #WORD *000000000000*>
+			   <SET DPG <+ .DPG ,NAMBLKLEN>>
+			   <SET LOST <+ .LOST 2>>
+			   <SET NUM <- .NUM 1>>
+			   <SET WHR <+ .WHR 1>>
+			   <AGAIN>>
+		      <PUT .MOBY 2 <NTH .DUV <+ ,NAMDATA 1>>>
+		      <SET WD <NTH .DUV <+ ,NAMCHNCDR 1>>>
+		      <PUT .MOBY
+			   1
+			   <PUTBITS .WD
+				    <BITS 18 18>
+				    <CHTYPE <+ <* .DIRNUM ,DIRSIZE> .WHR>
+					    WORD>>>
+		      <SET MOBY <REST .MOBY 2>>
+		      <SET DPG <+ .DPG ,NAMBLKLEN>>
+		      <SET NUM <- .NUM 1>>
+		      <SET WHR <+ .WHR 1>>)>>
+       <SET DIRNUM <+ .DIRNUM 1>>)>>
+   <SET MOBY <SORT <> <TOP .MOBY> 2 1>>
+   <AND .VERB
+        <PRINC "
+From     To     Length    Use">>
+   <REPEAT ((M .MOBY) LO HI (LSTLO -1) (LSTHI -1) (LSTM -1))
+	   #DECL ((LO HI LSTLO LSTHI) FIX (M) UVECTOR)
+	   <AND <EMPTY? .M> <RETURN>>
+	   <AND <==? <1 .M> #WORD *000000000000*>
+		<SET M <REST .M 2>>
+		<AGAIN>>
+	   <SET LO <CHTYPE <2 .M> FIX>>
+	   <SET HI <+ <CHTYPE <2 .M> FIX>
+		      <CHTYPE <GETBITS <1 .M> <BITS 18>> FIX>>>
+	   <COND (<==? .LO .LSTLO>
+		  <SALVERR "**SHARED BLOCK**" .LSTLO .LSTHI .LSTM .LO .HI <1 .M>>)
+		 (<L? .LO .LSTHI>
+		  <SALVERR "**BLOCKS OVERLAP**" .LSTLO .LSTHI .LSTM .LO .HI <1 .M>>)
+		 (<AND .SALV
+		       <G? .LO .LSTHI>
+		       <0? <CHTYPE <GETBITS <1 .M> <BITS 18 18>> FIX>>
+		       <0? <CHTYPE <GETBITS .LSTM <BITS 18 18>> FIX>>>
+		  <CRLF>
+		  <PRINC "DEALLOCATING BLOCK - Length = ">
+		  <PRIN1 <- .LO .LSTHI>>
+		  <PRINC "  Location = ">
+		  <PRIN1 .LSTHI>  
+		  <SALVDEALLOC .DC <- .LO .LSTHI> .LSTHI>)>
+	   <AND .VERB
+		<PBLOCK .LO .HI <1 .M>>>
+	   <SET LSTLO .LO>
+	   <SET LSTHI .HI>
+	   <SET LSTM <1 .M>>
+	   <SET M <REST .M 2>>>>
+
+<DEFINE PRTYPE (WD "AUX" HOW)
+    #DECL ((WD) WORD (HOW) FIX)
+    <COND (<0? <SET HOW <CHTYPE <GETBITS .WD <BITS 18 18>> FIX>>>
+ 	   <PRINC "Unallocated">)
+	  (<==? <CHTYPE .HOW WORD> #WORD *000000777777*>
+	   <PRINC "Reserved">)
+	  (<PRINC "Object #"> <PRIN1 .HOW>)>>
+
+<DEFINE SALVERR (ERR LLO LHI LM LO HI M)
+    #DECL ((ERR) STRING (LLO LHI LO HI) FIX (LM M) WORD)
+    <PRINC "
+ERROR -- ">
+    <PRINC .ERR>
+    <PBLOCK .LLO .LHI .LM>
+    <PBLOCK .LO .HI .M>
+    <CRLF>>
+
+<DEFINE PBLOCK (LO HI M)
+    #DECL ((LO HI) FIX (M) WORD)
+    <CRLF>
+    <PRIN1 .LO>
+    <INDENT-TO 9>
+    <PRIN1 .HI>
+    <INDENT-TO 16>
+    <PRIN1 <CHTYPE <GETBITS .M <BITS 18>> FIX>>
+    <INDENT-TO 26>
+    <PRTYPE .M>>
+<DEFINE LISTU ("AUX" (ALL <* 1024 <ALLOCPAGE ,TVASS>>) HI V)
+    #DECL ((ALL HI) FIX (V) UVECTOR)
+    <SET HI <CHTYPE <1 <GET-LOC <+ .ALL ,HIGHID> ,DUV1>> FIX>>
+    <SET V <AIUVECTOR ,MOBYSPACE <- .HI 1> 0>>
+    <REPEAT ((VEC .V) (N 1) FX)
+	#DECL ((VEC) UVECTOR (N FX) FIX)
+	<AND <==? .N .HI> <RETURN>>
+	<SET FX <CHTYPE <DATA-READW .N ,TVASS> FIX>>
+	<COND (<AND <G? .FX 0> <L? .FX .HI>>
+	       <PUT .VEC .FX 1>)>
+	<SET N <+ .N 1>>>
+    <MAPR <>
+	<FUNCTION (X "AUX" FOO)
+	    #DECL ((X) UVECTOR (FOO) FIX)
+	    <COND (<1? <1 .X>>)
+		  (<DATA-AREAD ,TVASS <SET FOO <- <LENGTH .V> <LENGTH .X> -1>>
+			 <ARESET ,TVSPACE>>
+		   <COND (<OR <MEMQ <- .FOO 3> ,LOSSTABLE>
+			      <MEMQ <- .FOO 6> ,LOSSTABLE>>)
+		         (<PRINC "
+Non-referenced object #">
+		 	  <PRIN1 .FOO>)>)>>
+	.V>
+    ,NULL>
+	
+	 
+
