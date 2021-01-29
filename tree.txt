@@ -9,6 +9,10 @@ trivia
 │   └── [Jan 25 12:06]  _info_
 │       ├── [May 30  1977]  its.tvdoc
 │       └── [May 30  1977]  its.tvdoix
+├── [Jan 28 16:51]  7005372
+│   └── [Jan 28 16:53]  mudsav
+│       ├── [Dec  9  1977]  fixup.file
+│       └── [Dec  9  1977]  sav.file
 ├── [Jan 25 12:06]  9005143
 │   ├── [Jan 25 12:06]  madman
 │   │   ├── [Jun 27  1977]  trv.savfil
@@ -22,18 +26,27 @@ trivia
 │   │   └── [Jul  1  1977]  trivia.curfew
 │   └── [Jan 25 12:06]  taa
 │       └── [Jun 30  1977]  ar2.tv
-├── [Jan 25 12:06]  9005183
+├── [Jan 28 15:39]  9005183
+│   ├── [Jan 28 15:38]  mudtmp
+│   │   └── [Jun 13  1977]  pmap.sav
 │   └── [Jan 25 12:06]  taa
 │       └── [May 31  1977]  ar2.tv
 ├── [Jan 25 12:06]  9005201
 │   └── [Jan 25 12:06]  }msgs}
 │       └── [Oct  2  1977]  trivia.curfew
 └── [Jan 25 12:06]  9006234
-    ├── [Jan 25 12:06]  madman
+    ├── [Jan 28 15:39]  madman
     │   ├── [Oct 12  1976]  trv.savfil
-    │   └── [Oct 12  1976]  tv.file
-    └── [Jan 25 12:06]  marc
+    │   ├── [Oct 10  1976]  tvdoc.14
+    │   ├── [Oct 12  1976]  tv.file
+    │   └── [Oct 10  1976]  tvupd.5
+    └── [Jan 28 15:40]  marc
         ├── [Oct 12  1976]  ar1.tv
+        ├── [Oct 10  1976]  ar2.other
+        ├── [Oct 10  1976]  babble.15
+        ├── [Oct 10  1976]  babble.gbin
+        ├── [Oct 10  1976]  babble.nbin
+        ├── [Oct 12  1976]  mbabbl.8
         ├── [Oct 11  1976]  tvdefs.2
         ├── [Oct 11  1976]  tvfrob.1
         ├── [Oct 12  1976]  tvfrob.5
@@ -43,4 +56,4 @@ trivia
         ├── [Oct 12  1976]  tvhack.gbin
         └── [Oct 12  1976]  tv.save
 
-17 directories, 26 files
+20 directories, 36 files

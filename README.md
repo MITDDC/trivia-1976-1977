@@ -6,7 +6,7 @@ The files within this directory are the Trivia specific files from multiple tape
 
 Most files were extracted from the tape image using the [itstar program](https://github.com/PDP-10/itstar). The filenames have been adapted to Unix conventions, as per the itstar translation. The original filename syntax would be formatted like, ```SYS; TS TRIVIA```, for example. All files have been placed into this artificial trivia directory for organizational purposes. The files extracted from the tape images were put into sub-folders with a corresponding name to the tapes listed above. Files in the ```7005366``` folder are from the pre-extracted set done by MIT CSAIL in 2009.
 
-The ```sys```, ```taa```, ```marc```, ```madman```, and ```mudsav``` directories in each sub-folder contain the source code, documentation, and binary files for the game.
+The ```sys```, ```taa```, ```marc```, ```madman```, ```mudtmp```, and ```mudsav``` directories in each sub-folder contain the source code, documentation, and binary files for the game.
 
 The ```}msgs}``` directories contain files where messages were posted to users, ```trivia.curfew``` files were messages to trivia users. The [```trivia.curfew```](../main/trivia/9005201/}msgs}/trivia.curfew) file in the ```9005201``` directory states that Trivia became unavailable by October 1977.
 
