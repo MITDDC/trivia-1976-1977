@@ -20,7 +20,7 @@ This file is the readme detailing the content and context for this repository.
 A file tree listing the files in the [```trivia```](../main/trivia) directory showing the original file timestamps as extracted from the tape image.
 
 ## Preferred Citation
-[filename], Trivia source code and binary files, 1976-1977, Massachusetts Institute of Technology, Tapes of Tech Square (ToTS) collection, MC-0741. Massachusetts Institute of Technology, Department of Distinctive Collections, Cambridge, Massachusetts.
+[filename], Trivia source code and binary files, 1976-1977, Massachusetts Institute of Technology, Tapes of Tech Square (ToTS) collection, MC-0741. Massachusetts Institute of Technology, Department of Distinctive Collections, Cambridge, Massachusetts. [swh:1:dir:16b648b2688a0fe2c72c48cb1754f5aed53eabe2](https://archive.softwareheritage.org/swh:1:dir:16b648b2688a0fe2c72c48cb1754f5aed53eabe2/)
 ## Rights
 The ownership status of these files is not entirely clear. To the extent that MIT holds rights in these files, we are happy to support their broad public use.  Any questions about permissions should be directed to [permissions-lib@mit.edu](mailto:permissions-lib@mit.edu)
 ## Acknowledgements
